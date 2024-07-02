@@ -9,6 +9,7 @@ export interface Node {
     y?: number;
     fx?: number | null;
     fy?: number | null;
+    depth?: number;
 }
 
 export interface NodeGraph {

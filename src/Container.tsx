@@ -69,30 +69,13 @@ const Container: React.FC = () => {
     }
 
     const returnAllNodesAndLinksForSelectedNode = (node: Node | null, finalNodes: Node[], finalLinks: Link[], checkedNodes: Node[], checkedMap: any) => {
-        if (node && selectedNode && selectedNode.id !== node.id) {
+        if (node) {
             //checkedNodes.push(node);
             checkedMap[node.id] = 1;
+        }
 
-            let depth = 0;
-            let isSelectedNode = false;
-            let currentNodes: Node[] = [];
-            currentNodes.push(node);
-            while (depth < 3 && !isSelectedNode) {
-                const oneStepFromCurrentTargets = finalLinks.filter(item => currentNodes.map(tem => tem.id).includes(item.source)).map(item => item.source);
-                const oneStepFromCurrentSources = finalLinks.filter(item => currentNodes.map(tem => tem.id).includes(item.target)).map(item => item.target);
-                const oneStepFromCurrentNodes = finalNodes.filter(item => !currentNodes.map(tem => tem.id).includes(item.id) && (oneStepFromCurrentTargets.includes(item.id) || oneStepFromCurrentSources.includes(item.id)));
-
-                if (oneStepFromCurrentNodes.map(item => item.id).includes(selectedNode.id)) {
-                    isSelectedNode = true;
-                }
-
-                currentNodes = oneStepFromCurrentNodes;
-                depth++;
-            }
-
-            if (!isSelectedNode) {
-                return;
-            }
+        if (node?.depth && node?.depth > 3) {
+            return;
         }
 
 
@@ -124,12 +107,12 @@ const Container: React.FC = () => {
         for (let n of exampleNodes) {
             let isIncluded = false;
             for (let fn of finalNodes) {
-                if (isDeepEqual(fn, n)){
+                if (fn.id === n.id){
                     isIncluded = true;
                 }
             }
             if (!isIncluded) {
-                finalNodes.push(n);
+                finalNodes.push({...n, depth: node?.depth ? node.depth + 1 : 1});
             }
         }
 
@@ -147,7 +130,7 @@ const Container: React.FC = () => {
     //ts-ignore
     console.log(returnAllNodesAndLinksForSelectedNode(selectedNode, finalNodes, finalLinks, checkedNodes, checkedMap));
 
-    const finalLinksTarget = links.map(item => item.target);
+    /*const finalLinksTarget = links.map(item => item.target);
 
     const uniqueFinalLinks = finalLinksTarget.filter((c, index) => {
         return finalLinksTarget.indexOf(c) !== index;
@@ -158,16 +141,26 @@ const Container: React.FC = () => {
     const resultLinks = finalLinks.filter(item => resultNodesId.includes(item.source) && resultNodesId.includes(item.target));
 
     const resultLinksTarget = resultLinks.map(item => item.target);
-    const resultLinksSource = resultLinks.map(item => item.source);
+    const resultLinksSource = resultLinks.map(item => item.source);*/
 
     //const interestingNode = 'Tyler Vega';
 
-    return (<div className="Container">
+    return (/*<div className="Container">
             <List nodes={nodes} links={links} onNodeClick={handleItemClick}/>
             {selectedNode &&
                 <Graph
                     nodes={resultNodes.filter(item => resultLinksTarget.includes(item.id) || resultLinksSource.includes(item.id))}
                     links={resultLinks}
+                />
+            }
+
+        </div>*/
+        <div className="Container">
+            <List nodes={nodes} links={links} onNodeClick={handleItemClick}/>
+            {selectedNode &&
+                <Graph
+                    nodes={finalNodes}
+                    links={finalLinks}
                 />
             }
 

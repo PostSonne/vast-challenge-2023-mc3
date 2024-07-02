@@ -4,9 +4,6 @@ import Container from "./Container";
 
 
 const App: React.FC = () => {
-
-
-
     return (
         <div className="App">
             <Container/>
