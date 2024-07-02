@@ -3,7 +3,7 @@ export interface Node {
     country: string;
     id: string;
     product_services: string;
-    revenue_omu: number;
+    revenue_omu: number | string;
     type: string;
     x?: number;
     y?: number;
@@ -15,7 +15,7 @@ export interface NodeGraph {
     country: string[];
     id: string[];
     product_services: string[];
-    revenue_omu: number[];
+    revenue_omu: number[] | string[];
     type: string[];
     x?: number;
     y?: number;

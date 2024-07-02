@@ -27,37 +27,72 @@ const Container: React.FC = () => {
         countries[n.country] = 1;
     }
 
-    console.log(Object.keys(countries));
-
     const [selectedNode, setSelectedNode] = useState<Node | null>(null);
 
     const handleItemClick = (item: Node) => {
         setSelectedNode(item);
     };
 
-    const eLinksTarget = links.map(item => item.target);
-
-    const uniqueArr = eLinksTarget.filter((c, index) => {
-        return eLinksTarget.indexOf(c) !== index;
-    });
-    console.log(uniqueArr);
-
     const nodesTypeCompany = nodes.filter(item => item.type === "Company").length;
     const nodesTypePerson = nodes.filter(item => item.type === "Person").length;
     const nodesTypeBeneficialOwner= nodes.filter(item => item.type === "Beneficial Owner").length;
     const nodesTypeCompanyContacts  = nodes.filter(item => item.type === "Company Contacts").length;
 
+    const countryNames = nodes.map(item => item.country);
+    const countryNamesFiltered = countryNames.filter((c, index, arr) => {
+        return arr.indexOf(c) === index;
+    });
+
+    const productServices = nodes.map(item => item.product_services);
+    const productServicesFiltered = productServices.filter((c, index, arr) => {
+        return arr.indexOf(c) === index;
+    });
+
+    const nodesWithEmptyProductServices = nodes.filter(item => item.product_services === "").length;
+    const nodesWithNonEmptyProductServices = nodes.length - nodesWithEmptyProductServices;
+    const nodesWithUnknownProductServices = nodes.filter(item => item.product_services === "Unknown").length;
+
+    const linksTypePerson = links.filter(item => item.type === "Person").length;
+    const linksTypeBeneficialOwner= links.filter(item => item.type === "Beneficial Owner").length;
+    const linksTypeCompanyContacts  = links.filter(item => item.type === "Company Contacts").length;
+
+    const nodesWithEmptyRevOmu = nodes.filter(item => item.revenue_omu === undefined || item.revenue_omu === "Unknown" || item.revenue_omu === 0).length;
+    const nodesWithRevOmu = nodes.length - nodesWithEmptyRevOmu;
+
+    const revOmu = nodes.map(item => item.revenue_omu);
+
+    const revOmuFiltered = revOmu.filter((number, index) => {
+        return revOmu.indexOf(number) !== index;
+    });
+
+    const withoutNull = revOmuFiltered.filter(item => item !== "Unknown" && item !== 0);
+
+    const withoutNullFiltered = withoutNull.filter((c, index, arr) => {
+        return arr.indexOf(c) === index;
+    });
+    const nodesWIthDuplicatedRevOmu = nodes.filter(item => withoutNullFiltered.includes(item.revenue_omu)).length;
+
+    //анализировать на первоначальном датасете?
     console.log(
         `Nodes with type 'Company': ${nodesTypeCompany}\n` +
         `Nodes with type 'Person': ${nodesTypePerson}\n` +
         `Nodes with type 'Beneficial Owner': ${nodesTypeBeneficialOwner}\n` +
         `Nodes with type 'Company Contacts': ${nodesTypeCompanyContacts}\n` +
-        `Nodes with type 'Beneficial Owner': ${nodesTypeBeneficialOwner}\n` +
-        `Nodes with type 'Beneficial Owner': ${nodesTypeBeneficialOwner}\n` +
-        `Nodes with type 'Beneficial Owner': ${nodesTypeBeneficialOwner}\n` +
-        `Nodes with type 'Beneficial Owner': ${nodesTypeBeneficialOwner}\n` +
-        `Nodes with type 'Beneficial Owner': ${nodesTypeBeneficialOwner}\n`
-
+        `Nodes with empty 'Product_services': ${nodesWithEmptyProductServices}\n` +
+        `Nodes with non-empty 'Product_services': ${nodesWithNonEmptyProductServices}\n` +
+        `Nodes with "Unknown" 'Product_services': ${nodesWithUnknownProductServices}\n` +
+        //`Product_services: ${productServicesFiltered}\n` +
+        `Product_services counter: ${productServicesFiltered.length}\n` +
+        `Country names: ${countryNamesFiltered}\n` +
+        `Country counter: ${countryNamesFiltered.length}\n` +
+        `Links with type 'Beneficial Owner': ${linksTypeBeneficialOwner}\n` +
+        `Links with type 'Company Contacts': ${linksTypeCompanyContacts}\n` +
+        `Links with type 'Person': ${linksTypePerson}\n` +
+        `Nodes with empty 'revenue_omu': ${nodesWithEmptyRevOmu}\n` +
+        `Nodes with non-empty 'revenue_omu': ${nodesWithRevOmu}\n` +
+        `Duplicated 'revenue_omu': ${withoutNullFiltered}\n` +
+        `Duplicated 'revenue_omu' counter: ${withoutNullFiltered.length}\n` +
+        `Nodes with duplicated 'revenue_omu': ${nodesWIthDuplicatedRevOmu}\n`
     );
 
     let finalNodes: Node[] = [];
@@ -133,7 +168,6 @@ const Container: React.FC = () => {
             }
         }
 
-        console.log(Object.keys(checkedMap).length)
         if (checkedNodes.length !== finalNodes.length) {
             for (let n of finalNodes) {
                 if (checkedMap[n.id] !== 1) {
@@ -145,7 +179,7 @@ const Container: React.FC = () => {
         return {finalNodes, finalLinks};
     }
     //ts-ignore
-    console.log(returnAllNodesAndLinksForSelectedNode(selectedNode, finalNodes, finalLinks, checkedNodes, checkedMap));
+    //console.log(returnAllNodesAndLinksForSelectedNode(selectedNode, finalNodes, finalLinks, checkedNodes, checkedMap));
 
     const finalLinksTarget = links.map(item => item.target);
 
