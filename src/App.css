@@ -1,5 +1,12 @@
 .App {
   text-align: center;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+
+.Container {
+  display: flex;
 }
 
 .App-logo {

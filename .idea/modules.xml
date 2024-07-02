@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../vaproject.iml" filepath="$PROJECT_DIR$/../vaproject.iml" />
+      <module fileurl="file://$PROJECT_DIR$/vaproject.iml" filepath="$PROJECT_DIR$/vaproject.iml" />
     </modules>
   </component>
 </project>
