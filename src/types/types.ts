@@ -44,3 +44,13 @@ export interface GraphData {
     links: LinkGraph[];
     nodes: NodeGraph[];
 }
+
+export interface CountryProps {
+    name: string;
+    value: number
+}
+
+export interface IContainerProps {
+    data: GraphData;
+}
+

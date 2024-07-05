@@ -1,13 +1,12 @@
 import React from 'react';
-import {Node, Link} from "./types";
+import {Node, Link} from "../types/types";
 
 interface ListProps {
     nodes: Node[];
-    links: Link[];
     onNodeClick: (item: Node) => void;
 }
 
-const List: React.FC<ListProps> = ({ nodes, links, onNodeClick }) => {
+const List: React.FC<ListProps> = ({ nodes, onNodeClick }) => {
     return (
         <ul>
             {nodes.map(node => {

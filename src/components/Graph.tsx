@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
-import {GraphData, Node, Link, NodeGraph, LinkGraph} from "./types";
+import {GraphData, Node, Link, NodeGraph, LinkGraph} from "../types/types";
 import {Simulation} from "d3";
 
 interface GraphProps {
@@ -11,18 +11,18 @@ interface GraphProps {
 const Graph: React.FC<GraphProps> = ({ nodes, links }) => {
     const svgRef = useRef<SVGSVGElement | null>(null);
 
+    console.log(nodes);
+
     useEffect(() => {
         const svg = d3.select(svgRef.current);
         svg.selectAll('*').remove();
         const width = 800;
         const height = 600;
 
-        svg.attr('width', width).attr('height', height);
-
         let simulation: Simulation<Node, undefined>;
         simulation = d3.forceSimulation<Node>(nodes)
             .force('link', d3.forceLink<Node, Link>(links).id((d: any) => d.id))
-            .force('charge', d3.forceManyBody().strength(-50))
+            .force('charge', d3.forceManyBody().strength(-1000))
             .force('center', d3.forceCenter(width / 2, height / 2));
 
         const link = svg.append('g')
@@ -35,9 +35,9 @@ const Graph: React.FC<GraphProps> = ({ nodes, links }) => {
 
         const node = svg.append('g')
             .attr('stroke', '#f700fe')
-            .attr('stroke-width', 5)
+            .attr('stroke-width', 10)
             .selectAll('circle')
-            .data(nodes.filter(item => item.type !== 'company' && item.revenue_omu === 0))
+            .data(nodes.filter(item => item.type !== 'Company'))
             .join("circle")
             .attr('r', 1)
             .attr('fill', 'blue')
@@ -59,9 +59,9 @@ const Graph: React.FC<GraphProps> = ({ nodes, links }) => {
 
         const companies = svg.append('g')
             .attr('stroke', '#48fe00')
-            .attr('stroke-width', 5)
+            .attr('stroke-width', 30)
             .selectAll('circle')
-            .data(nodes.filter(item => item.type || item.revenue_omu !== 0))
+            .data(nodes.filter(item => item.type === 'Company'))
             .join("circle")
             .attr('r', 1)
             .attr('fill', 'blue')
@@ -132,7 +132,7 @@ const Graph: React.FC<GraphProps> = ({ nodes, links }) => {
     }, [nodes, links]);
 
     return (
-        <svg ref={svgRef}/>
+        <svg style={{width: '100%'}} ref={svgRef}/>
     );
 };
 
