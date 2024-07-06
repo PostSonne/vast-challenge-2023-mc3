@@ -9,7 +9,7 @@ import {
     Accordion, AccordionDetails,
     AccordionSummary,
     Box,
-    Button,
+    Button, Card,
     List,
     ListItem,
     ListItemButton,
@@ -20,12 +20,16 @@ import {
     Typography
 } from "@mui/material";
 import TableComponent from "./TableComponent";
+import HeatMap from "./HeatMap";
 
 // @ts-ignore
 const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMap, subGraphs}) => {
 
     const [selectedNode, setSelectedNode] = useState<Node | null>(null);
     const [countShowing, setCountShowing] = useState<number>(10);
+    const [showHeatMapCountries, setShowHeatMapCountries] = useState<boolean>(false);
+    const [showHeatMapServices, setShowHeatMapServices] = useState<boolean>(false);
+
     const [selectedIndex, setSelectedIndex] = React.useState(1);
 
     const handleItemClick = (item: Node, index?: number) => {
@@ -336,8 +340,10 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
 
     const revOmuMax = Math.max(...filterOutliers(revOmu) as number[]);
     const revOmuMin = Math.min(...revOmu as number[]);
-    const revOmuSteps = Math.ceil((revOmuMax - revOmuMin) / 100);
+    const revOmuSteps = Math.ceil((revOmuMax - revOmuMin) / 10);
+    const revOmuStepsSlider = Math.ceil((revOmuMax - revOmuMin) / 100);
     const revOmuRangeSteps = [];
+    const revOmuRangeStepsSlider = [];
 
     let current = Math.floor(revOmuMin);
     while (current < revOmuMax) {
@@ -346,8 +352,22 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
     }
     revOmuRangeSteps.push(Math.ceil(Math.max(...revOmu as number[])));
 
+    current = Math.floor(revOmuMin);
+    while (current < revOmuMax) {
+        revOmuRangeStepsSlider.push(current);
+        current = current + revOmuStepsSlider
+    }
+    revOmuRangeStepsSlider.push(Math.ceil(Math.max(...revOmu as number[])));
+
     const productServicesGroupsLabels = Object.keys(groupedWords);
     const revOmuRangesLabels = revOmuRangeSteps.reduce((acc: string[], curr, index, array) => {
+        if (index < array.length - 1) {
+            acc.push(`${(curr / 10000).toFixed(1)} - ${(array[index + 1] / 10000).toFixed(1)}`);
+        }
+        return acc;
+    }, []);
+
+    const revOmuRangesLabelsSlider = revOmuRangeStepsSlider.reduce((acc: string[], curr, index, array) => {
         if (index < array.length - 1) {
             acc.push(`${(curr / 10000).toFixed(1)} - ${(array[index + 1] / 10000).toFixed(1)}`);
         }
@@ -382,23 +402,16 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
 
     const filterData: any = [];
 
-    for (let r of revOmuRangesLabels) {
-        const index = revOmuRangesLabels.indexOf(r);
-        let count = 0;
+    for (let r of revOmuRangesLabelsSlider) {
+        const index = revOmuRangesLabelsSlider.indexOf(r);
         for (let n of nodes) {
-            if (n.revenue_omu) {
-                count++;
-            }
-            if ((index === revOmuRangesLabels.length - 1) && n.revenue_omu >= revOmuRangeSteps[revOmuRangesLabels.length - 2]) {
-                filterData.push({r: Number(((revOmuRangeSteps[revOmuRangesLabels.length - 2]) / 1000).toFixed(1)), node: n})
-            } else if (n.revenue_omu >= revOmuRangeSteps[index] && n.revenue_omu < revOmuRangeSteps[index + 1]) {
-                filterData.push({r: Number(((revOmuRangeSteps[index + 1] + revOmuRangeSteps[index]) / (2 * 1000)).toFixed(1)), node: n})
+            if ((index === revOmuRangesLabelsSlider.length - 1) && n.revenue_omu >= revOmuRangeStepsSlider[revOmuRangesLabelsSlider.length - 2]) {
+                filterData.push({r: Number(((revOmuRangeStepsSlider[revOmuRangesLabelsSlider.length - 2]) / 1000).toFixed(1)), node: n})
+            } else if (n.revenue_omu >= revOmuRangeStepsSlider[index] && n.revenue_omu < revOmuRangeStepsSlider[index + 1]) {
+                filterData.push({r: Number(((revOmuRangeStepsSlider[index + 1] + revOmuRangeStepsSlider[index]) / (2 * 1000)).toFixed(1)), node: n})
             }
         }
-        console.log(count);
     }
-
-    console.log(filterData);
 
     const heatMapData2: any = [];
 
@@ -464,7 +477,7 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
         return countryFrequency[b] - countryFrequency[a]
     });
 
-    for (let c of countryNamesSorted) {
+    for (let c of countryNamesSorted.splice(0, 10)) {
         for (let r of revOmuRangesLabels) {
             let count = 0;
             const index = revOmuRangesLabels.indexOf(r);
@@ -602,7 +615,7 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
 
     return (
         <div className="Container" style={{ background: '#f2f6fc' }}>
-            <div style={{display: 'flex'}}>
+            <div style={{display: 'flex', justifyContent: 'space-between'}}>
                 <div style={{width: '30%'}}>
                     <div style={{display: 'flex', flexDirection: 'column'}}>
                         <Accordion>
@@ -667,8 +680,28 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
                         </div>
                     </div>
                 </div>
-                <div style={{width: '70%'}}>
+                <div style={{width: '69%'}}>
                     <div style={{display: 'flex', flexDirection: 'column'}} >
+                        <Box sx={{ minWidth: 275 }}>
+                            <Card variant="outlined">
+                                <div style={{margin: '12px 0', display: 'flex', alignItems: 'flex-start'}}>
+                                    <Button style={{marginRight: '20px', marginLeft: '20px'}} variant="outlined" onClick={() => {
+                                        setShowHeatMapCountries(!showHeatMapCountries);
+                                        setShowHeatMapServices(false);
+                                    }}>SHOW HEATMAP REVENUE/SERVICES</Button>
+                                    <Button variant="outlined" onClick={() => {
+                                        setShowHeatMapServices(!showHeatMapServices);
+                                        setShowHeatMapCountries(false);
+                                    }}>SHOW HEATMAP REVENUE/COUNTRIES</Button>
+                                </div>
+                            </Card>
+                            {(showHeatMapCountries || showHeatMapServices) ? <Card>
+                                <div style={{margin: '12px 0', display: 'flex', flexDirection: 'column'}}>
+                                    {showHeatMapCountries ? <HeatMap nodes={nodes} heatMapData={heatMapData} width={500} height={300}/> : ''}
+                                    {showHeatMapServices ? <HeatMap nodes={nodes} heatMapData={heatMapData2} width={500} height={300}/> : ''}
+                                </div>
+                            </Card> : ''}
+                        </Box>
                     </div>
                 </div>
             </div>

@@ -59,6 +59,7 @@ const HeatMap: React.FC<HeatmapProps> = ({nodes, width, height, heatMapData}) =>
                     .append("div")
                     .style("opacity", 0)
                     .attr("class", "tooltip")
+                    .style('position', 'absolute')
                     .style("background-color", "white")
                     .style("border", "solid")
                     .style("border-width", "2px")
@@ -68,15 +69,17 @@ const HeatMap: React.FC<HeatmapProps> = ({nodes, width, height, heatMapData}) =>
                 // Three function that change the tooltip when user hover / move / leave a cell
                 const mouseover = function(event: any,d: any) {
                     tooltip.style("opacity", 1)
+                        .style('display', 'block')
                 }
                 const mousemove = function(event: any,d: any) {
                     tooltip
-                        .html("The exact value of<br>this cell is: " + d[2])
-                        .style("left", (event.x)/2 + "px")
-                        .style("top", (event.y)/2 + "px")
+                        .html("Number of nodes: " + d[2])
+                        .style("left", event.x + "px")
+                        .style("top", event.y + "px")
                 }
                 const mouseleave = function(d: any) {
                     tooltip.style("opacity", 0)
+                        .style('display', 'none')
                 }
 
                 // add the squares
