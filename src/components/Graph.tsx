@@ -11,7 +11,7 @@ interface GraphProps {
 const Graph: React.FC<GraphProps> = ({ nodes, links }) => {
     const svgRef = useRef<SVGSVGElement | null>(null);
 
-    console.log(nodes);
+    //console.log(nodes);
 
     useEffect(() => {
         const svg = d3.select(svgRef.current);

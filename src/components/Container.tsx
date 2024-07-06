@@ -1,8 +1,10 @@
 import React, {useState} from 'react';
 import {CountryProps, IContainerProps, Link, Node} from "../types/types";
 import Graph from "./Graph";
+import HeatMap from "./HeatMap";
+import PieChart from "./PieChart";
+import MatrixDiagramComponent from "./MatrixDiagramComponent";
 
-// @ts-ignore
 const Container: React.FC<IContainerProps> = ({data}) => {
     const links: Link[] = [];
     const classifiedCompanyNodes: any = {};
@@ -32,7 +34,7 @@ const Container: React.FC<IContainerProps> = ({data}) => {
         }
     }
 
-    console.log(Object.keys(classifiedCompanyNodes));
+    //console.log(Object.keys(classifiedCompanyNodes));
 
     const nodes: Node[] = data.nodes.filter(item => item.id && item.id.length === 1).map(node => ({
         ...node,
@@ -417,7 +419,7 @@ const Container: React.FC<IContainerProps> = ({data}) => {
     const heatMapData2: any = [];
 
 
-    console.log(heatMapData);
+    //console.log(heatMapData);
 
     //анализировать на первоначальном датасете?
     /*console.log(
@@ -463,7 +465,7 @@ const Container: React.FC<IContainerProps> = ({data}) => {
     });
 
     const countryFrequency: any = {};
-    for (let n of nodes) {
+    for (let n of nodes.filter(item => item.type === 'Company')) {
         if (n.country) {
             if (countryFrequency[n.country]) {
                 countryFrequency[n.country] = countryFrequency[n.country] + 1;
@@ -510,7 +512,7 @@ const Container: React.FC<IContainerProps> = ({data}) => {
             checkedMap[node.id] = 1;
         }
 
-        if (node?.depth && node?.depth > 1) {
+        if (node?.depth && node?.depth > 2) {
             return;
         }
 
@@ -565,8 +567,12 @@ const Container: React.FC<IContainerProps> = ({data}) => {
     //ts-ignore
     returnAllNodesAndLinksForSelectedNode(selectedNode, finalNodes, finalLinks, checkedNodes, checkedMap);
 
+    const matrixNodes = finalNodes.slice();
+    const matrixLinks = finalLinks.slice();
+
     const liList = nodes.filter(item => item.id === 'Christopher Anthony').slice(0, countShowing).map(item => <li
         onClick={() => handleItemClick(item)}>{item.id}</li>)
+
     return (
         <div className="Container">
             <div style={{display: 'flex', flexDirection: 'column'}}>
@@ -575,14 +581,18 @@ const Container: React.FC<IContainerProps> = ({data}) => {
                     {liList}
                 </ul>
             </div>
-            {selectedNode &&
-                <Graph
-                    nodes={finalNodes}
-                    links={finalLinks}
-                />
-            }
-            {/*<PieChart countedCountries={countedCountries.filter(i => i.value > 50)} width={1200} height={600}/>
-            <HeatMap nodes={nodes} heatMapData={heatMapData2} width={500} height={300}/>*/}
+            {/*{selectedNode &&
+                <>
+                    {<Graph
+                        nodes={finalNodes}
+                        links={finalLinks}
+                    />}
+                    <MatrixDiagramComponent nodes={matrixNodes} links={matrixLinks}/>
+                </>
+
+            }*/}
+            <PieChart countedCountries={countedCountries.filter(i => i.value > 50)} width={1200} height={600}/>
+            {/*<HeatMap nodes={nodes} heatMapData={heatMapData2} width={500} height={300}/>*/}
         </div>
     );
 };
