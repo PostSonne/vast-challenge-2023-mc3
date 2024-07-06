@@ -76,4 +76,6 @@ export interface NodesTableRow {
 
 export interface ITableComponentProps {
     rows: NodesTableRow[];
+    handleClick: (item: number) => void;
+    selectedRow: number | null;
 }

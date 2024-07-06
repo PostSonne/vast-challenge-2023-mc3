@@ -31,8 +31,8 @@ const MatrixDiagramComponent: React.FC<GraphProps> = ({nodes, links}) => {
             bottom: 0,
             left: 175
         };
-        const width = 1000 - margin.left - margin.right;
-        const height = 1000 - margin.top - margin.bottom;
+        const width = 825 - margin.left - margin.right;
+        const height = 825 - margin.top - margin.bottom;
         const color = d3.scaleOrdinal(d3.schemeCategory10).domain(d3.range(10));
         const opacity = d3.scaleLinear()
             .domain([0, 4])

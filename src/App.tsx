@@ -1,11 +1,11 @@
 import React, {useMemo} from 'react';
 import Container from "./components/Container";
-import data from "./data/dataUpdated.json";
+import graphData from "./data/dataUpdated.json";
 import {GraphData, Link, Node} from "./types/types";
 
 
 const App: React.FC = () => {
-    const graphData = (data as GraphData);
+    const data = (graphData as GraphData);
 
     const links: Link[] = [];
     const linkMap: any = {};
@@ -74,7 +74,7 @@ const App: React.FC = () => {
     const linkedNodes: Node[] = nodes.filter(item => linkMap[item.id]);
 
     const result = useMemo(() => {
-        return [];//constructAllSubgraphs(linkedNodes, links);
+        return constructAllSubgraphs(linkedNodes, links);
     }, [linkedNodes, links]);
 
     return (
@@ -84,7 +84,7 @@ const App: React.FC = () => {
     );
 };
 
-function constructSubgraph(nodeId: string, nodes: Node[], links: Link[], depth?: number) {
+export function constructSubgraph(nodeId: string, nodes: Node[], links: Link[], depth?: number) {
     let subgraphNodeIds = new Set([nodeId]);
     let subgraphLinks = [];
     let nodesToVisit = [{ id: nodeId, depth: 0 }];

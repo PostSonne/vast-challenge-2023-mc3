@@ -6,25 +6,50 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import RangeSliderComponent from "./BarRangeSlider";
 import PieChart from "./PieChart";
 import {
-    Accordion, AccordionDetails,
+    Accordion,
+    AccordionDetails,
     AccordionSummary,
     Box,
-    Button, Card,
+    Button,
+    Card,
     List,
     ListItemButton,
-    ListItemText,
+    ListItemText, MenuItem, TextField,
     Typography
 } from "@mui/material";
 import TableComponent from "./TableComponent";
 import HeatMap from "./HeatMap";
+import MatrixDiagramComponent from "./MatrixDiagramComponent";
+
+const depthList = [
+    {
+        value: 1,
+        label: 1,
+    },
+    {
+        value: 2,
+        label: 2,
+    },
+    {
+        value: 3,
+        label: 3,
+    },
+    {
+        value: 4,
+        label: 4,
+    },
+];
 
 // @ts-ignore
 const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMap, subGraphs}) => {
 
     const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+    const [selectedRow, setSelectedRow] = useState<number | null>(null);
     const [countShowing, setCountShowing] = useState<number>(10);
     const [showHeatMapCountries, setShowHeatMapCountries] = useState<boolean>(false);
     const [showHeatMapServices, setShowHeatMapServices] = useState<boolean>(false);
+    const [showGraph, setShowGraph] = useState<boolean>(false);
+    const [showMatrix, setShowMatrix] = useState<boolean>(false);
 
     const [selectedIndex, setSelectedIndex] = React.useState(1);
 
@@ -398,9 +423,15 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
         const index = revOmuRangesLabelsSlider.indexOf(r);
         for (let n of nodes) {
             if ((index === revOmuRangesLabelsSlider.length - 1) && n.revenue_omu >= revOmuRangeStepsSlider[revOmuRangesLabelsSlider.length - 2]) {
-                filterData.push({r: Number(((revOmuRangeStepsSlider[revOmuRangesLabelsSlider.length - 2]) / 1000).toFixed(1)), node: n})
+                filterData.push({
+                    r: Number(((revOmuRangeStepsSlider[revOmuRangesLabelsSlider.length - 2]) / 1000).toFixed(1)),
+                    node: n
+                })
             } else if (n.revenue_omu >= revOmuRangeStepsSlider[index] && n.revenue_omu < revOmuRangeStepsSlider[index + 1]) {
-                filterData.push({r: Number(((revOmuRangeStepsSlider[index + 1] + revOmuRangeStepsSlider[index]) / (2 * 1000)).toFixed(1)), node: n})
+                filterData.push({
+                    r: Number(((revOmuRangeStepsSlider[index + 1] + revOmuRangeStepsSlider[index]) / (2 * 1000)).toFixed(1)),
+                    node: n
+                })
             }
         }
     }
@@ -582,19 +613,25 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
     }];*/
 
     return (
-        <div className="Container" style={{ background: '#f2f6fc' }}>
+        <div className="Container" style={{background: '#f2f6fc'}}>
             <div style={{display: 'flex', justifyContent: 'space-between'}}>
                 <div style={{width: '30%'}}>
                     <div style={{display: 'flex', flexDirection: 'column'}}>
                         <Accordion>
                             <AccordionSummary
-                                expandIcon={<ArrowDropDownIcon />}
+                                expandIcon={<ArrowDropDownIcon/>}
                                 aria-controls="panel2-content"
                                 id="panel2-header"
                             >
-                                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%'}}>
+                                <div style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    width: '100%'
+                                }}>
                                     <Typography>Applied Filters</Typography>
-                                    <Button style={{marginRight: '20px'}} variant="outlined" onClick={() => setCountShowing(countShowing + 10)}>Filter</Button>
+                                    <Button style={{marginRight: '20px'}} variant="outlined"
+                                            onClick={() => setCountShowing(countShowing + 10)}>Filter</Button>
                                 </div>
                             </AccordionSummary>
                             <AccordionDetails>
@@ -607,8 +644,14 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
                                     </div>
                                     <div style={{display: 'flex', flexDirection: 'column'}}>
                                         <Typography>Countries</Typography>
-                                        <div style={{marginTop: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                            <PieChart countedCountries={countedCountries.filter(i => i.value > 50)} width={300} height={300}/>
+                                        <div style={{
+                                            marginTop: '10px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}>
+                                            <PieChart countedCountries={countedCountries.filter(i => i.value > 50)}
+                                                      width={300} height={300}/>
                                         </div>
                                     </div>
                                 </div>
@@ -644,41 +687,106 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
                                     </TableBody>
                                 </Table>
                             </TableContainer>*/}
-                            <TableComponent rows={rows}/>
+                            <TableComponent rows={rows} handleClick={(id) => {
+                                setSelectedRow(id);
+                                setShowHeatMapServices(false);
+                                setShowHeatMapCountries(false);
+                            }} selectedRow={selectedRow}/>
                         </div>
                     </div>
                 </div>
                 <div style={{width: '69%'}}>
-                    <div style={{display: 'flex', flexDirection: 'column'}} >
-                        <Box sx={{ minWidth: 275 }}>
-                            <Card variant="outlined">
-                                <div style={{margin: '12px 0', display: 'flex', alignItems: 'flex-start'}}>
-                                    <Button style={{marginRight: '20px', marginLeft: '20px'}} variant="outlined" onClick={() => {
-                                        setShowHeatMapCountries(!showHeatMapCountries);
-                                        setShowHeatMapServices(false);
-                                    }}>SHOW HEATMAP REVENUE/SERVICES</Button>
-                                    <Button variant="outlined" onClick={() => {
-                                        setShowHeatMapServices(!showHeatMapServices);
-                                        setShowHeatMapCountries(false);
-                                    }}>SHOW HEATMAP REVENUE/COUNTRIES</Button>
+                    <div style={{display: 'flex', flexDirection: 'column'}}>
+                        {selectedRow ?
+                            <Box sx={{minWidth: 275}}>
+                                <Card variant="outlined">
+                                    <div style={{margin: '12px 0', display: 'flex', alignItems: 'flex-start'}}>
+                                        <Button style={{marginRight: '20px', marginLeft: '20px'}} variant="outlined"
+                                                onClick={() => {
+                                                    setShowMatrix(!showMatrix);
+                                                    setShowGraph(false);
+                                                }}>SHOW MATRIX</Button>
+                                        <Button variant="outlined" onClick={() => {
+                                            setShowGraph(!showGraph);
+                                            setShowMatrix(false);
+                                        }}>SHOW GRAPH</Button>
+                                        <div style={{marginLeft: '20px', display: 'flex'}}>
+                                            <Typography style={{display: 'flex', alignItems: 'center', paddingRight: '12px'}}>Select depth:</Typography>
+                                            <TextField
+                                                id="outlined-select-currency"
+                                                select
+                                                defaultValue="1"
+                                                variant="standard"
+                                            >
+                                                {depthList.map((option) => (
+                                                    <MenuItem key={option.value} value={option.value}>
+                                                        {option.label}
+                                                    </MenuItem>
+                                                ))}
+                                            </TextField>
+                                        </div>
+                                    </div>
+                                </Card>
+                                <div style={{display: 'flex'}}>
+                                    <div style={{width: '20%'}}>
+                                        <Card>
+                                            <div style={{margin: '12px 0', display: 'flex', flexDirection: 'column'}}>
+                                                <List component="nav" aria-label="main mailbox folders">
+                                                    {subGraphs[selectedRow - 1].nodes.map(item =>
+                                                        <ListItemButton style={{textAlign: 'center'}} selected={item.id === selectedNode?.id}
+                                                                        onClick={() => handleItemClick(item)}>
+                                                            <ListItemText>{item.id}</ListItemText>
+                                                        </ListItemButton>
+                                                    )}
+                                                </List>
+                                            </div>
+                                        </Card>
+                                    </div>
+                                    {(showMatrix || showGraph) ? <Card>
+                                        <div style={{margin: '12px 0', display: 'flex', flexDirection: 'column'}}>
+                                            {showMatrix ?
+                                                <MatrixDiagramComponent nodes={subGraphs[selectedRow - 1].nodes} links={subGraphs[selectedRow - 1].links} /> : ''}
+                                            {showGraph ?
+                                                <Graph nodes={subGraphs[selectedRow - 1].nodes} links={subGraphs[selectedRow - 1].links} /> : ''}
+                                        </div>
+                                    </Card> : ''}
                                 </div>
-                            </Card>
-                            {(showHeatMapCountries || showHeatMapServices) ? <Card>
-                                <div style={{margin: '12px 0', display: 'flex', flexDirection: 'column'}}>
-                                    {showHeatMapCountries ? <HeatMap nodes={nodes} heatMapData={heatMapData} width={500} height={300}/> : ''}
-                                    {showHeatMapServices ? <HeatMap nodes={nodes} heatMapData={heatMapData2} width={500} height={300}/> : ''}
-                                </div>
-                            </Card> : ''}
-                        </Box>
+                            </Box> :
+                            <Box sx={{minWidth: 275}}>
+                                <Card variant="outlined">
+                                    <div style={{margin: '12px 0', display: 'flex', alignItems: 'flex-start'}}>
+                                        <Button style={{marginRight: '20px', marginLeft: '20px'}} variant="outlined"
+                                                onClick={() => {
+                                                    setShowHeatMapCountries(!showHeatMapCountries);
+                                                    setShowHeatMapServices(false);
+                                                }}>SHOW HEATMAP REVENUE/SERVICES</Button>
+                                        <Button variant="outlined" onClick={() => {
+                                            setShowHeatMapServices(!showHeatMapServices);
+                                            setShowHeatMapCountries(false);
+                                        }}>SHOW HEATMAP REVENUE/COUNTRIES</Button>
+                                    </div>
+                                </Card>
+                                {(showHeatMapCountries || showHeatMapServices) ? <Card>
+                                    <div style={{margin: '12px 0', display: 'flex', flexDirection: 'column'}}>
+                                        {showHeatMapCountries ?
+                                            <HeatMap nodes={nodes} heatMapData={heatMapData} width={500}
+                                                     height={300}/> : ''}
+                                        {showHeatMapServices ?
+                                            <HeatMap nodes={nodes} heatMapData={heatMapData2} width={500}
+                                                     height={300}/> : ''}
+                                    </div>
+                                </Card> : ''}
+                            </Box>}
                     </div>
                 </div>
             </div>
             <div className="table-graph-container">
                 <div style={{display: 'flex', flexDirection: 'column', width: '30%'}}>
-                    <Box sx={{ width: '100%', maxWidth: "100%", bgcolor: 'background.paper' }}>
+                    <Box sx={{width: '100%', maxWidth: "100%", bgcolor: 'background.paper'}}>
                         <List component="nav" aria-label="main mailbox folders">
                             {nodes.slice(0, countShowing).map(item =>
-                                <ListItemButton style={{textAlign: 'center'}} selected={item.id === selectedNode?.id} onClick={() => handleItemClick(item)}>
+                                <ListItemButton style={{textAlign: 'center'}} selected={item.id === selectedNode?.id}
+                                                onClick={() => handleItemClick(item)}>
                                     <ListItemText>{item.id}</ListItemText>
                                 </ListItemButton>
                             )}

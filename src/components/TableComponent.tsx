@@ -47,29 +47,29 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
     };
 
     return (
-        <Box sx={{ flexShrink: 0, ml: 2.5 }}>
-            <IconButton
+        <Box sx={{ flexShrink: 0}}>
+            <IconButton style={{padding: '4px'}}
                 onClick={handleFirstPageButtonClick}
                 disabled={page === 0}
                 aria-label="first page"
             >
                 {theme.direction === 'rtl' ? <LastPage /> : <FirstPage />}
             </IconButton>
-            <IconButton
+            <IconButton style={{padding: '4px'}}
                 onClick={handleBackButtonClick}
                 disabled={page === 0}
                 aria-label="previous page"
             >
                 {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
             </IconButton>
-            <IconButton
+            <IconButton style={{padding: '4px'}}
                 onClick={handleNextButtonClick}
                 disabled={page >= Math.ceil(count / rowsPerPage) - 1}
                 aria-label="next page"
             >
                 {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
             </IconButton>
-            <IconButton
+            <IconButton style={{padding: '4px'}}
                 onClick={handleLastPageButtonClick}
                 disabled={page >= Math.ceil(count / rowsPerPage) - 1}
                 aria-label="last page"
@@ -80,7 +80,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
     );
 }
 
-const TableComponent: React.FC<ITableComponentProps> = ({rows}) => {
+const TableComponent: React.FC<ITableComponentProps> = ({rows, selectedRow, handleClick}) => {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -119,7 +119,7 @@ const TableComponent: React.FC<ITableComponentProps> = ({rows}) => {
                             ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             : rows
                     ).map((row) => (
-                        <TableRow
+                        <TableRow onClick={() => handleClick(row.id)} selected={row.id === selectedRow}
                             key={row.id}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                         >
