@@ -50,7 +50,7 @@ const HeatMap: React.FC<HeatmapProps> = ({nodes, width, height, heatMapData}) =>
 // Build color scale
             const myColor = d3.scaleLinear()
                 // @ts-ignore
-                .range(["white", "#69b3a2"])
+                .range(["white", "#057D9F"])
                 .domain([Math.min(...heatMapData.map(item => item[2]) as number[]), Math.max(...heatMapData.map(item => item[2]) as number[])])
 
 

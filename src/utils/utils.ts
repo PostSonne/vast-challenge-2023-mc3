@@ -189,7 +189,7 @@ export const groupedWords: any = {
         "various",
         "wide"
     ],
-    seafood: [
+    seafoodAndFish: [
         "cod",
         "crab",
         "crabs",
