@@ -1,3 +1,4 @@
+import TableComponent from "../components/TableComponent";
 
 export interface Node {
     country: string;
@@ -51,6 +52,28 @@ export interface CountryProps {
 }
 
 export interface IContainerProps {
-    data: GraphData;
+    nodes: Node[];
+    links: Link[];
+    linkedNodes?: Node[];
+    linkMap?: any;
+    subGraphs: SubGraph[]
 }
 
+export interface SubGraph {
+    nodes: Node[];
+    links: Link[];
+}
+
+export interface NodesTableRow {
+    id: number;
+    numberFishCompanies: number;
+    numberNodes: number;
+    numberLinks: number;
+    averageRevenue: number;
+    nodes?: Node[];
+    links?: Link[];
+}
+
+export interface ITableComponentProps {
+    rows: NodesTableRow[];
+}
