@@ -27,24 +27,10 @@ const PieChart: React.FC<PieChartProps> = ({countedCountries, width, height}) =>
         }
     }
 
-    function mouseover(event: any, d: any) {
-        // @ts-ignore
-        d3.select(this)
-            .style("opacity", 0.8)
-    }
-
-    function mouseleave(event: any, d: any) {
-        // @ts-ignore
-        d3.select(this)
-            .style("opacity", 1)
-    }
-
-    function mousemove(event: any, d: any) {}
-
     useEffect(() => {
         if (!countedCountries || countedCountries.length === 0) return;
 
-        const radius = Math.min(width, height) / 2;
+        const radius = Math.min(width, height) / 2.5;
         const names = countedCountries.sort((a,b) => b.value - a.value).map(i => i.name);
 
         const div = d3.select(svgRef.current);
@@ -67,6 +53,9 @@ const PieChart: React.FC<PieChartProps> = ({countedCountries, width, height}) =>
 
         // Three function that change the tooltip when user hover / move / leave a cell
         const mouseover = function(event: any,d: any) {
+            // @ts-ignore
+            d3.select(this)
+                .style("opacity", 0.8)
             tooltip.style("opacity", 1)
                 .style('display', 'block')
         }
@@ -77,6 +66,9 @@ const PieChart: React.FC<PieChartProps> = ({countedCountries, width, height}) =>
                 .style("top", event.y + "px")
         }
         const mouseleave = function(d: any) {
+            // @ts-ignore
+            d3.select(this)
+                .style("opacity", 1)
             tooltip.style("opacity", 0)
                 .style("display",  "none")
         }

@@ -3,12 +3,8 @@ import {CountryProps, IContainerProps, Link, Node, NodesTableRow} from "../types
 import Graph from "./Graph";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
-import qwe from "../data/test.json";
-import cars from "../data/dataCars.json";
-import BarRangeSlider from "./BarRangeSlider";
 import RangeSliderComponent from "./BarRangeSlider";
 import PieChart from "./PieChart";
-import HeatMap from "./HeatMap";
 import {
     Accordion, AccordionDetails,
     AccordionSummary,
