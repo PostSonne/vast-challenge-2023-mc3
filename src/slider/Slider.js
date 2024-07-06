@@ -328,7 +328,7 @@ export default class RangeSlider {
         const axisY = d3
             .axisLeft(scaleY)
             .tickSize(-calc.chartWidth - 20)
-            .ticks(max == 1 ? 1 : attrs.yTicks)
+            .ticks(max === 1 ? 1 : attrs.yTicks)
             .tickFormat(d3.format(".2s"));
 
         const bars = chart

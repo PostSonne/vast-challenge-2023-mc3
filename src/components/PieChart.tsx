@@ -119,32 +119,6 @@ const PieChart: React.FC<PieChartProps> = ({countedCountries, width, height}) =>
             .on("mousemove", mousemove)
         ;
 
-        /*arcs.append('text')
-            .attr('transform', d => {
-                //const pos = outerArc.centroid(d);
-                const midAngle = (d.startAngle + d.endAngle) / 2;
-                const param = (Math.PI * 2 - midAngle) < 0.5 * Math.PI ? 0.3 + Math.pow((Math.PI * 0.5 - (Math.PI * 2 - midAngle)) / (Math.PI * 0.5), 8) : 0.8;
-                const pos = outerArcFunc(param).centroid(d);
-                pos[0] = radius * (midAngle < Math.PI ? 1 : -1);
-                return `translate(${pos})`;
-            })
-            .attr('dy', '0.35em')
-            .attr('text-anchor', d => (d.startAngle + d.endAngle) / 2 < Math.PI ? 'start' : 'end')
-            .text(d => d.data.name);*/
-
-        // Add lines between slices and labels
-        /*arcs.append('polyline')
-            // @ts-ignore
-            .attr('points', d => {
-                const midAngle = (d.startAngle + d.endAngle) / 2;
-                const param = (Math.PI * 2 - midAngle) < 0.5 * Math.PI ? 0.3 + Math.pow((Math.PI * 0.5 - (Math.PI * 2 - midAngle)) / (Math.PI * 0.5), 8) : 0.8;
-                const pos = outerArcFunc(param).centroid(d);
-                pos[0] = radius * 0.95 * (midAngle < Math.PI ? 1 : -1);
-                return [arcTest.centroid(d), outerArcFunc(param).centroid(d), pos];
-            })
-            .style('fill', 'none')
-            .style('stroke', 'black');*/
-
         return () => {
             // eslint-disable-next-line react-hooks/exhaustive-deps
             d3.select(svgRef.current).selectAll('*').remove();

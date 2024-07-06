@@ -123,19 +123,20 @@ const TableComponent: React.FC<ITableComponentProps> = ({rows}) => {
                             key={row.id}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                         >
-                            <TableCell component="th" scope="row">
+                            <TableCell sx={{ fontSize: "12px" }} component="th" scope="row">
                                 {row.id}
                             </TableCell>
-                            <TableCell align="right">{row.numberFishCompanies}</TableCell>
-                            <TableCell align="right">{row.averageRevenue}</TableCell>
-                            <TableCell align="right">{row.numberNodes}</TableCell>
-                            <TableCell align="right">{row.numberLinks}</TableCell>
+                            <TableCell sx={{ fontSize: "12px" }} align="right">{row.numberFishCompanies}</TableCell>
+                            <TableCell sx={{ fontSize: "12px" }} align="right">{row.averageRevenue}</TableCell>
+                            <TableCell sx={{ fontSize: "12px" }} align="right">{row.numberNodes}</TableCell>
+                            <TableCell sx={{ fontSize: "12px" }} align="right">{row.numberLinks}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
                 <TableFooter>
                     <TableRow>
                         <TablePagination
+                            sx={{ overflow: "hidden" }}
                             rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                             colSpan={12}
                             count={rows.length}

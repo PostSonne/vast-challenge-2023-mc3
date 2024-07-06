@@ -44,7 +44,6 @@ const RangeSliderComponent: React.FC<RangeSliderComponentProps> = ({ data, width
                     marginTop: "10px",
                     borderRadius: "2px",
                     paddingTop: "20px",
-                    paddingLeft: "10px",
                     backgroundColor: "#fff",
                     width: `${width}px`
                 }}
