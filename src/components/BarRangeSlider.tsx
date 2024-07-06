@@ -1,4 +1,3 @@
-import * as d3 from 'd3';
 import React, { useState, useEffect, useRef } from 'react';
 // @ts-ignore
 import RangeSlider from '../slider/Slider.js';
@@ -13,8 +12,6 @@ const RangeSliderComponent: React.FC<RangeSliderComponentProps> = ({ data, width
     const [selectedData, setSelectedData] = useState<any[]>([]);
     const node = useRef<HTMLDivElement>(null);
     let chart: any;
-    console.log(selectedRange);
-
     const createDiagram = () => {
         if (!data) return;
 
@@ -24,7 +21,7 @@ const RangeSliderComponent: React.FC<RangeSliderComponentProps> = ({ data, width
 
         chart
             .container(node.current)
-            .svgWidth(220)
+            .svgWidth(320)
             .svgHeight(125)
             .data(data)
             .accessor((d : any) => d.r)
@@ -48,7 +45,7 @@ const RangeSliderComponent: React.FC<RangeSliderComponentProps> = ({ data, width
                     borderRadius: "2px",
                     paddingTop: "20px",
                     paddingLeft: "10px",
-                    backgroundColor: "#30363E",
+                    backgroundColor: "#fff",
                     width: `${width}px`
                 }}
                 ref={node}

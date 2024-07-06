@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import {Node, Link} from "../types/types";
-import {Simulation, style} from "d3";
+import {Simulation} from "d3";
 
 interface GraphProps {
     nodes: Node[];
@@ -129,31 +129,6 @@ const Graph: React.FC<GraphProps> = ({ nodes, links }) => {
                     d.fy = null;
                 }));
 
-        /*const label = svg.append("g")
-            .attr("class", "labels")
-            .selectAll("text")
-            .data(nodes)
-            .enter().append("text")
-            .text(node => (node.id))
-            .attr("class", "label")
-
-        label
-            .style("text-anchor", "middle")
-            .style("font-size", "14px");
-
-        const linkLabelType = svg.append("g")
-            .attr("class", "labels")
-            .selectAll("text")
-            .data(links)
-            .enter().append("text")
-            .text(link => (link.type))
-            .attr("class", "linkLabel")
-
-        linkLabelType
-            .style("text-anchor", "middle")
-            .style("font-size", "10px");*/
-
-
         simulation.on('tick', () => {
             linkBeneficiary
                 .attr('x1', d => (d.source as any).x)
@@ -174,22 +149,12 @@ const Graph: React.FC<GraphProps> = ({ nodes, links }) => {
                 .attr('cx', d => (d as any).x)
                 .attr('cy', d => (d as any).y);
 
-            /*label
-                .attr("x", d => (d as any).x)
-                .attr("y", d => (d as any).y);
-
-            linkLabelType
-                .attr('x', d => (d.source as any).x > (d.target as any).x ? (d.source as any).x - ((Math.abs((d.source as any).x - (d.target as any).x)) / 2) : (d.source as any).x + ((Math.abs((d.source as any).x - (d.target as any).x)) / 2))
-                .attr('y', d => (d.source as any).y > (d.target as any).y ? (d.source as any).y - ((Math.abs((d.source as any).y - (d.target as any).y)) / 2) : (d.source as any).y + ((Math.abs((d.source as any).y - (d.target as any).y)) / 2))*/
         });
 
     }, [nodes, links]);
 
     return (
-        <div ref={svgRef}>
-            {/*<svg style={{width: "800px", height: "500px"}} ref={svgRef}/>*/}
-        </div>
-
+        <div ref={svgRef}/>
     );
 };
 

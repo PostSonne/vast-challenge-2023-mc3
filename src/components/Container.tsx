@@ -11,12 +11,8 @@ import {
     Box,
     Button, Card,
     List,
-    ListItem,
     ListItemButton,
-    ListItemText, Paper, Table, TableBody,
-    TableCell,
-    TableContainer, TableHead,
-    TableRow,
+    ListItemText,
     Typography
 } from "@mui/material";
 import TableComponent from "./TableComponent";
@@ -266,7 +262,6 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
             countedProductServices[n.product_services] = 1;
         }
     }
-    //отсортированные продукт сервисы по частоте того как встречаются
     const productServicesKeysSorted = Object.keys(countedProductServices).sort(function (a, b) {
         return countedProductServices[b] - countedProductServices[a]
     });
@@ -279,7 +274,6 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
 
     const nodesWithEmptyProductServices = nodes.filter(item => item.product_services !== "" && item.product_services !== "Unknown" && item.product_services !== undefined).map(i => i.product_services);
 
-    //const nodesWithProductServices = nodes.length - nodesWithEmptyProductServices;
     const nodesWithUnknownProductServices = nodes.filter(item => item.product_services === "Unknown").length;
 
     const heatMapData = [];
@@ -398,8 +392,6 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
         }
     }
 
-    console.log(heatMapData);
-
     const filterData: any = [];
 
     for (let r of revOmuRangesLabelsSlider) {
@@ -415,29 +407,6 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
 
     const heatMapData2: any = [];
 
-    /*console.log(
-        `Nodes with type 'Company': ${nodesTypeCompany}\n` +
-        `Nodes with type 'Person': ${nodesTypePerson}\n` +
-        `Nodes with type 'Beneficial Owner': ${nodesTypeBeneficialOwner}\n` +
-        `Nodes with type 'Company Contacts': ${nodesTypeCompanyContacts}\n` +
-        `Nodes without 'Product_services': ${nodesWithEmptyProductServices}\n` +
-        `Nodes with 'Product_services': ${nodesWithProductServices}\n` +
-        //`Nodes with "Unknown" 'Product_services': ${nodesWithUnknownProductServices}\n` +
-        //`Product_services: ${productServicesFiltered}\n` +
-        `Product_services counter: ${productServicesFiltered.length}\n` +
-        `Links with type 'Beneficial Owner': ${linksTypeBeneficialOwner}\n` +
-        `Links with type 'Company Contacts': ${linksTypeCompanyContacts}\n` +
-        `Links with type 'Person': ${linksTypePerson}\n` +
-
-        `Nodes with empty 'revenue_omu': ${nodesWithEmptyRevOmu}\n` +
-        `Nodes with non-empty 'revenue_omu': ${nodesWithRevOmu}\n` +
-        //`Duplicated 'revenue_omu': ${withoutNullFiltered}\n` +
-        `Duplicated 'revenue_omu' counter: ${withoutNullFiltered.length}\n` +
-        `Nodes with duplicated 'revenue_omu': ${nodesWIthDuplicatedRevOmu}\n`
-    );*/
-
-
-    //какая нода чаще всего является таргетом?
     const countedTargets: any = {};
     for (let l of links) {
         if (countedTargets[l.target]) {
@@ -447,7 +416,6 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
         }
     }
 
-    //отсортированные айдишники нод по частоте того как они являются таргетом
     const targetKeysSorted = Object.keys(countedTargets).sort(function (a, b) {
         return countedTargets[b] - countedTargets[a]
     });

@@ -216,7 +216,6 @@ export default class RangeSlider {
             Object.assign(d, { value: typeof attrs.aggregator == "function" ? attrs.aggregator(d) : d.values.length })
         );
 
-        console.log(grouped);
         const values = grouped.map((d) => d.value);
         const max = d3.max(values);
         const maxX = grouped[grouped.length - 1].key;
@@ -371,8 +370,8 @@ export default class RangeSlider {
 
         chart
             .selectAll(".selection")
-            .attr("fill-opacity", 0.1)
-            .attr("fill", "white")
+            .attr("fill-opacity", 0.5)
+            .attr("fill", "#6AA9C3")
             .attr("stroke-opacity", 0.4);
 
 
@@ -552,7 +551,7 @@ export default class RangeSlider {
             resultArr = Object.keys(resultObj).map((k) => {
                 const result = {};
                 const keys = JSON.parse(k);
-                if (keys.length == 1) {
+                if (keys.length === 1) {
                     result.key = keys[0];
                 } else {
                     result.keys = keys;
