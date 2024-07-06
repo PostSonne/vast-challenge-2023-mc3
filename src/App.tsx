@@ -84,7 +84,7 @@ const App: React.FC = () => {
     );
 };
 
-export function constructSubgraph(nodeId: string, nodes: Node[], links: Link[], depth?: number) {
+function constructSubgraph(nodeId: string, nodes: Node[], links: Link[], depth?: number) {
     let subgraphNodeIds = new Set([nodeId]);
     let subgraphLinks = [];
     let nodesToVisit = [{ id: nodeId, depth: 0 }];

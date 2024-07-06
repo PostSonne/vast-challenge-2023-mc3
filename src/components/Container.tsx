@@ -52,8 +52,6 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
     const [showGraph, setShowGraph] = useState<boolean>(false);
     const [showMatrix, setShowMatrix] = useState<boolean>(false);
 
-    const [selectedIndex, setSelectedIndex] = React.useState(1);
-
     const handleItemClick = (item: Node, index?: number) => {
         setSelectedNode(item);
     };
@@ -361,35 +359,6 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
                     </div>
                 </div>
             </div>
-            <div className="table-graph-container">
-                <div style={{display: 'flex', flexDirection: 'column', width: '30%'}}>
-                    <Box sx={{width: '100%', maxWidth: "100%", bgcolor: 'background.paper'}}>
-                        <List component="nav" aria-label="main mailbox folders">
-                            {nodes.slice(0, countShowing).map(item =>
-                                <ListItemButton style={{textAlign: 'center'}} selected={item.id === selectedNode?.id}
-                                                onClick={() => handleItemClick(item)}>
-                                    <ListItemText>{item.id}</ListItemText>
-                                </ListItemButton>
-                            )}
-                        </List>
-                        <Button variant="outlined" onClick={() => setCountShowing(countShowing + 10)}>ADD MORE</Button>
-
-                    </Box>
-                </div>
-                {selectedNode &&
-                    <Graph
-                        nodes={finalNodes}
-                        links={finalLinks}
-                    />
-                }
-            </div>
-
-            {/*<PieChart countedCountries={countedCountries.filter(i => i.value > 50)} width={1200} height={600}/>
-            <HeatMap nodes={nodes} heatMapData={heatMapData2} width={500} height={300}/>
-            <RangeSliderComponent
-                data={cars}
-                width={250}
-            />*/}
         </div>
     );
 };
