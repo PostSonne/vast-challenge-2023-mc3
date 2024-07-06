@@ -5,7 +5,6 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 import RangeSliderComponent from "./BarRangeSlider";
 import PieChart from "./PieChart";
-import HeatMap from "./HeatMap";
 import {
     Accordion, AccordionDetails,
     AccordionSummary,
