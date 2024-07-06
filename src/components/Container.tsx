@@ -3,9 +3,6 @@ import {CountryProps, IContainerProps, Link, Node, NodesTableRow} from "../types
 import Graph from "./Graph";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
-import qwe from "../data/test.json";
-import cars from "../data/dataCars.json";
-import BarRangeSlider from "./BarRangeSlider";
 import RangeSliderComponent from "./BarRangeSlider";
 import PieChart from "./PieChart";
 import HeatMap from "./HeatMap";
@@ -677,16 +674,17 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
                 </div>
             </div>
             <div className="table-graph-container">
-                <div style={{display: 'flex', flexDirection: 'column'}}>
-                    <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-                        <Button variant="outlined" onClick={() => setCountShowing(countShowing + 10)}>ADD MORE</Button>
+                <div style={{display: 'flex', flexDirection: 'column', width: '30%'}}>
+                    <Box sx={{ width: '100%', maxWidth: "100%", bgcolor: 'background.paper' }}>
                         <List component="nav" aria-label="main mailbox folders">
                             {nodes.slice(0, countShowing).map(item =>
-                                <ListItemButton selected={item.id === selectedNode?.id} onClick={() => handleItemClick(item)}>
+                                <ListItemButton style={{textAlign: 'center'}} selected={item.id === selectedNode?.id} onClick={() => handleItemClick(item)}>
                                     <ListItemText>{item.id}</ListItemText>
                                 </ListItemButton>
                             )}
                         </List>
+                        <Button variant="outlined" onClick={() => setCountShowing(countShowing + 10)}>ADD MORE</Button>
+
                     </Box>
                 </div>
                 {selectedNode &&
