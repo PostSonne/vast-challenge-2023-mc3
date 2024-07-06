@@ -1,3 +1,8 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
 .App {
   text-align: center;
   overflow: hidden;
@@ -6,9 +11,15 @@
 }
 
 .Container {
+  width: 100%;
+  height: 100%;
+  padding-left: 20px;
+  padding-top: 10px;;
+  /*display: flex;*/
+}
+.table-graph-container {
   display: flex;
-  width: 1000px;
-  height: 1080px;
+  margin-top: 20px;
 }
 
 .App-logo {

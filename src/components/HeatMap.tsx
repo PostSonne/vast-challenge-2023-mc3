@@ -94,6 +94,7 @@ const HeatMap: React.FC<HeatmapProps> = ({nodes, width, height, heatMapData}) =>
                     .on("mouseleave", mouseleave)
             }
     }, [heatMapData, width, height, nodes]);
+
     return (
         <div ref={divRef}/>
     );

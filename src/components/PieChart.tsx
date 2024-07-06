@@ -9,18 +9,46 @@ interface PieChartProps {
 }
 
 const PieChart: React.FC<PieChartProps> = ({countedCountries, width, height}) => {
-    const svgRef = useRef<SVGSVGElement | null>(null);
+    const svgRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         if (!countedCountries || countedCountries.length === 0) return;
 
-        const radius = Math.min(width, height) / 3;
+        const radius = Math.min(width, height) / 2;
 
-        const svg = d3.select(svgRef.current)
+        const div = d3.select(svgRef.current);
+        const svg = div.append('svg')
             .attr('width', width)
             .attr('height', height)
             .append('g')
             .attr('transform', `translate(${width / 2}, ${height / 2})`);
+
+        const tooltip = div
+            .append("div")
+            .style("opacity", 0)
+            .style("position", 'absolute')
+            .attr("class", "tooltip")
+            .style("background-color", "white")
+            .style("border", "solid")
+            .style("border-width", "2px")
+            .style("border-radius", "5px")
+            .style("padding", "5px");
+
+        // Three function that change the tooltip when user hover / move / leave a cell
+        const mouseover = function(event: any,d: any) {
+            tooltip.style("opacity", 1)
+                .style('display', 'block')
+        }
+        const mousemove = function(event: any,d: any) {
+            tooltip
+                .html(`<p>${d.data.name}</p>`)
+                .style("left", event.x + "px")
+                .style("top", event.y + "px")
+        }
+        const mouseleave = function(d: any) {
+            tooltip.style("opacity", 0)
+                .style("display",  "none")
+        }
 
         const color = d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -54,9 +82,12 @@ const PieChart: React.FC<PieChartProps> = ({countedCountries, width, height}) =>
 
         arcs.append('path')
             .attr('d', arc)
-            .attr('fill', (d, i) => color(i.toString()));
+            .attr('fill', (d, i) => color(i.toString()))
+            .on("mouseover", mouseover)
+            .on("mousemove", mousemove)
+            .on("mouseleave", mouseleave);
 
-        arcs.append('text')
+        /*arcs.append('text')
             .attr('transform', d => {
                 //const pos = outerArc.centroid(d);
                 const midAngle = (d.startAngle + d.endAngle) / 2;
@@ -67,10 +98,10 @@ const PieChart: React.FC<PieChartProps> = ({countedCountries, width, height}) =>
             })
             .attr('dy', '0.35em')
             .attr('text-anchor', d => (d.startAngle + d.endAngle) / 2 < Math.PI ? 'start' : 'end')
-            .text(d => d.data.name);
+            .text(d => d.data.name);*/
 
         // Add lines between slices and labels
-        arcs.append('polyline')
+        /*arcs.append('polyline')
             // @ts-ignore
             .attr('points', d => {
                 //const pos = outerArc.centroid(d);
@@ -82,7 +113,7 @@ const PieChart: React.FC<PieChartProps> = ({countedCountries, width, height}) =>
                 return [arcTest.centroid(d), outerArcFunc(param).centroid(d), pos];
             })
             .style('fill', 'none')
-            .style('stroke', 'black');
+            .style('stroke', 'black');*/
 
         return () => {
             // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -90,7 +121,10 @@ const PieChart: React.FC<PieChartProps> = ({countedCountries, width, height}) =>
         };
     }, [countedCountries, width, height]);
 
-    return <svg ref={svgRef}></svg>;
+    return (
+        <div style={{width: '100%'}} ref={svgRef}>
+        </div>
+    );
 };
 
 export default PieChart;

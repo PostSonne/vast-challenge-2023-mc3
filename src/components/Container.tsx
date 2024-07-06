@@ -1,72 +1,40 @@
-import React, {useState} from 'react';
-import {CountryProps, IContainerProps, Link, Node} from "../types/types";
+import React, {useMemo, useState} from 'react';
+import {CountryProps, IContainerProps, Link, Node, NodesTableRow} from "../types/types";
 import Graph from "./Graph";
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+
+import qwe from "../data/test.json";
+import cars from "../data/dataCars.json";
+import BarRangeSlider from "./BarRangeSlider";
+import RangeSliderComponent from "./BarRangeSlider";
+import PieChart from "./PieChart";
+import HeatMap from "./HeatMap";
+import {
+    Accordion, AccordionDetails,
+    AccordionSummary,
+    Box,
+    Button,
+    List,
+    ListItem,
+    ListItemButton,
+    ListItemText, Paper, Table, TableBody,
+    TableCell,
+    TableContainer, TableHead,
+    TableRow,
+    Typography
+} from "@mui/material";
+import TableComponent from "./TableComponent";
 
 // @ts-ignore
-const Container: React.FC<IContainerProps> = ({data}) => {
-    const links: Link[] = [];
-    const classifiedCompanyNodes: any = {};
-    for (let l of data.links) {
-        if (l.source && l.source.length > 1) {
-            for (let s of l.source) {
-                links.push({
-                    source: s,
-                    target: l.target[0],
-                    type: l.type[0]
-                });
-
-                if (l.type[0] === 'Beneficial Owner' || l.type[0] === 'Company Contacts') {
-                    classifiedCompanyNodes[s] = 1;
-                }
-            }
-        } else {
-            links.push({
-                source: l.source[0],
-                target: l.target[0],
-                type: l.type[0]
-            });
-
-            if (l.type[0] === 'Beneficial Owner' || l.type[0] === 'Company Contacts') {
-                classifiedCompanyNodes[l.source[0]] = 1;
-            }
-        }
-    }
-
-    console.log(Object.keys(classifiedCompanyNodes));
-
-    const nodes: Node[] = data.nodes.filter(item => item.id && item.id.length === 1).map(node => ({
-        ...node,
-        id: node.id[0],
-        country: node.country ? node.country[0] : "",
-        product_services: node.product_services ? node.product_services[0] : "",
-        revenue_omu: node.revenue_omu ? node.revenue_omu[0] : "",
-        type: (node.type && node.type[0].length > 0) ? node.type[0] : (classifiedCompanyNodes[node.id[0]] ? "Company" : "")
-    }));
-
-    const nodeIds: any = {};
-    for (let n of nodes) {
-        nodeIds[n.id] = 1;
-    }
-
-    const strangeNodes = data.nodes.filter(item => item.id && item.id.length > 1);
-    for (let n of strangeNodes) {
-        for (let id of n.id) {
-            if (!nodeIds[id]) {
-                nodes.push({
-                    id: id, country: n.country ? n.country[0] : "",
-                    product_services: n.product_services ? n.product_services[0] : "",
-                    revenue_omu: n.revenue_omu ? n.revenue_omu[0] : "",
-                    type: (n.type && n.type[0].length > 0) ? n.type[0] : (classifiedCompanyNodes[id] ? "Company" : "")
-                })
-            }
-        }
-    }
+const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMap, subGraphs}) => {
 
     const [selectedNode, setSelectedNode] = useState<Node | null>(null);
     const [countShowing, setCountShowing] = useState<number>(10);
+    const [selectedIndex, setSelectedIndex] = React.useState(1);
 
-    const handleItemClick = (item: Node) => {
+    const handleItemClick = (item: Node, index?: number) => {
         setSelectedNode(item);
+        //setSelectedIndex(index);
     };
 
     const groupedWords: any = {
@@ -372,7 +340,7 @@ const Container: React.FC<IContainerProps> = ({data}) => {
 
     const revOmuMax = Math.max(...filterOutliers(revOmu) as number[]);
     const revOmuMin = Math.min(...revOmu as number[]);
-    const revOmuSteps = Math.ceil((revOmuMax - revOmuMin) / 10);
+    const revOmuSteps = Math.ceil((revOmuMax - revOmuMin) / 100);
     const revOmuRangeSteps = [];
 
     let current = Math.floor(revOmuMin);
@@ -414,12 +382,30 @@ const Container: React.FC<IContainerProps> = ({data}) => {
         }
     }
 
-    const heatMapData2: any = [];
-
-
     console.log(heatMapData);
 
-    //анализировать на первоначальном датасете?
+    const filterData: any = [];
+
+    for (let r of revOmuRangesLabels) {
+        const index = revOmuRangesLabels.indexOf(r);
+        let count = 0;
+        for (let n of nodes) {
+            if (n.revenue_omu) {
+                count++;
+            }
+            if ((index === revOmuRangesLabels.length - 1) && n.revenue_omu >= revOmuRangeSteps[revOmuRangesLabels.length - 2]) {
+                filterData.push({r: Number(((revOmuRangeSteps[revOmuRangesLabels.length - 2]) / 1000).toFixed(1)), node: n})
+            } else if (n.revenue_omu >= revOmuRangeSteps[index] && n.revenue_omu < revOmuRangeSteps[index + 1]) {
+                filterData.push({r: Number(((revOmuRangeSteps[index + 1] + revOmuRangeSteps[index]) / (2 * 1000)).toFixed(1)), node: n})
+            }
+        }
+        console.log(count);
+    }
+
+    console.log(filterData);
+
+    const heatMapData2: any = [];
+
     /*console.log(
         `Nodes with type 'Company': ${nodesTypeCompany}\n` +
         `Nodes with type 'Person': ${nodesTypePerson}\n` +
@@ -463,7 +449,7 @@ const Container: React.FC<IContainerProps> = ({data}) => {
     });
 
     const countryFrequency: any = {};
-    for (let n of nodes) {
+    for (let n of nodes.filter(item => item.type === 'Company')) {
         if (n.country) {
             if (countryFrequency[n.country]) {
                 countryFrequency[n.country] = countryFrequency[n.country] + 1;
@@ -498,91 +484,225 @@ const Container: React.FC<IContainerProps> = ({data}) => {
 
     let finalNodes: Node[] = [];
     let finalLinks: Link[] = [];
+    let finalLinksMap: any = {};
     let checkedNodes: Node[] = [];
     let checkedMap: any = {};
     if (selectedNode) {
         checkedMap[selectedNode.id] = 1;
     }
 
-    const returnAllNodesAndLinksForSelectedNode = (node: Node | null, finalNodes: Node[], finalLinks: Link[], checkedNodes: Node[], checkedMap: any) => {
+    /*const returnAllNodesAndLinksForSelectedNode = (
+        node: Node | null,
+        finalNodes: Node[],
+        finalLinks: Link[],
+        checkedMap: Record<string, boolean>,
+        isFull: boolean,
+        finalLinksMap: Record<string, boolean>
+    ): { finalNodes: Node[]; finalLinks: Link[] } => {
         if (node) {
-            //checkedNodes.push(node);
-            checkedMap[node.id] = 1;
+            checkedMap[node.id] = true;
         }
 
-        if (node?.depth && node?.depth > 1) {
-            return;
+        if (!isFull && node?.depth && node.depth > 1) {
+            return { finalNodes, finalLinks };
         }
-
 
         const exampleLinks = links.filter((i) => i.source === node?.id || i.target === node?.id);
-
         let isAllFinal = true;
-        for (let l of exampleLinks) {
-            let isIncluded = false;
-            for (let fl of finalLinks) {
-                if (fl.target === l.target && fl.source === l.source) {
-                    isIncluded = true;
-                }
-            }
-            if (!isIncluded) {
+
+        for (const l of exampleLinks) {
+            const linkKey = `${l.source}-${l.target}`;
+            if (!finalLinksMap[linkKey]) {
                 isAllFinal = false;
                 finalLinks.push(l);
+                finalLinksMap[linkKey] = true;
             }
         }
 
         if (isAllFinal) {
-            return {finalNodes, finalLinks}
+            return { finalNodes, finalLinks };
         }
 
-        const exampleSources = exampleLinks.map(item => item.source);
-        const exampleTargets = exampleLinks.map(item => item.target);
+        const linkMap: Record<string, boolean> = {};
+        for (const l of exampleLinks) {
+            linkMap[l.source] = true;
+            linkMap[l.target] = true;
+        }
 
-        const exampleNodes = nodes.filter(item => exampleSources.includes(item.id) || exampleTargets.includes(item.id));
+        const exampleNodes = nodes.filter((item) => linkMap[item.id]);
 
-        for (let n of exampleNodes) {
-            let isIncluded = false;
-            for (let fn of finalNodes) {
-                if (fn.id === n.id) {
-                    isIncluded = true;
-                }
-            }
-            if (!isIncluded) {
-                finalNodes.push({...n, depth: node?.depth ? node.depth + 1 : 1});
+        for (const n of exampleNodes) {
+            if (!finalNodes.some((fn) => fn.id === n.id)) {
+                finalNodes.push({ ...n, depth: (node?.depth ?? 0) + 1 });
             }
         }
 
-        if (checkedNodes.length !== finalNodes.length) {
-            for (let n of finalNodes) {
-                if (checkedMap[n.id] !== 1) {
-                    returnAllNodesAndLinksForSelectedNode(n, finalNodes, finalLinks, checkedNodes, checkedMap);
-                }
+        for (const n of finalNodes) {
+            if (!checkedMap[n.id]) {
+                returnAllNodesAndLinksForSelectedNode(n, finalNodes, finalLinks, checkedMap, isFull, finalLinksMap);
             }
         }
 
-        return {finalNodes, finalLinks};
-    }
-    //ts-ignore
-    returnAllNodesAndLinksForSelectedNode(selectedNode, finalNodes, finalLinks, checkedNodes, checkedMap);
+        return { finalNodes, finalLinks };
+    };*/
 
-    const liList = nodes.filter(item => item.id === 'Christopher Anthony').slice(0, countShowing).map(item => <li
-        onClick={() => handleItemClick(item)}>{item.id}</li>)
+    const rows = useMemo(() => {
+        const tempRows: NodesTableRow[] = [];
+        let idCount = 1;
+        for (let subGraph of subGraphs) {
+            tempRows.push({
+                id: idCount,
+                numberFishCompanies: 10,
+                averageRevenue: 47,
+                numberNodes: subGraph.nodes.length,
+                numberLinks: subGraph.links.length,
+                nodes: subGraph.nodes,
+                links: subGraph.links
+            });
+            idCount++;
+        }
+
+        return [...tempRows.sort((a, b) => b.numberNodes - a.numberNodes)];
+    }, [subGraphs]);
+    /*const rows = useMemo(() => {
+        const completedNodeIds: any = {};
+        let completedNodes: Node[] = [];
+        const rows: NodesTableRow[] = [];
+        let idCount = 1;
+        const time = new Date();
+        for (let n of linkedNodes) {
+            const clusterNodes: any = [];
+            const clusterLinks: any = [];
+            const completedLinksMap: any = {};
+            if (!completedNodeIds[n.id]) {
+                returnAllNodesAndLinksForSelectedNode(n, clusterNodes, clusterLinks, completedNodeIds, true, completedLinksMap);
+                rows.push({
+                    id: idCount,
+                    numberFishCompanies: 10,
+                    averageRevenue: 47,
+                    numberNodes: clusterNodes.length,
+                    numberLinks: clusterLinks.length,
+                    nodes: clusterNodes,
+                    links: clusterLinks
+                });
+                idCount++;
+                console.log(rows);
+            }
+        }
+        console.log(new Date().getTime() - time.getTime());
+
+        return rows;
+    }, [linkedNodes, returnAllNodesAndLinksForSelectedNode]);*/
+
+    //returnAllNodesAndLinksForSelectedNode(selectedNode, finalNodes, finalLinks, checkedNodes, checkedMap, false);
+
+    /*const rows: NodesTableRow[] = [{
+        id: 1,
+        numberFishCompanies: 10,
+        averageRevenue: 47,
+        numberNodes: 100,
+        numberLinks: 200
+    }];*/
+
     return (
-        <div className="Container">
-            <div style={{display: 'flex', flexDirection: 'column'}}>
-                <button onClick={() => setCountShowing(countShowing + 10)}>ADD MORE</button>
-                <ul>
-                    {liList}
-                </ul>
+        <div className="Container" style={{ background: '#f2f6fc' }}>
+            <div style={{display: 'flex'}}>
+                <div style={{width: '30%'}}>
+                    <div style={{display: 'flex', flexDirection: 'column'}}>
+                        <Accordion>
+                            <AccordionSummary
+                                expandIcon={<ArrowDropDownIcon />}
+                                aria-controls="panel2-content"
+                                id="panel2-header"
+                            >
+                                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%'}}>
+                                    <Typography>Applied Filters</Typography>
+                                    <Button style={{marginRight: '20px'}} variant="outlined" onClick={() => setCountShowing(countShowing + 10)}>Filter</Button>
+                                </div>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <div style={{display: 'flex', flexDirection: 'column'}}>
+                                    <div style={{display: 'flex', flexDirection: 'column'}}>
+                                        <Typography>Num. Nodes/Revenue in Mil.</Typography>
+                                        <RangeSliderComponent
+                                            data={filterData} width={300}
+                                        />
+                                    </div>
+                                    <div style={{display: 'flex', flexDirection: 'column'}}>
+                                        <Typography>Countries</Typography>
+                                        <div style={{marginTop: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                            <PieChart countedCountries={countedCountries.filter(i => i.value > 50)} width={300} height={300}/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </AccordionDetails>
+                        </Accordion>
+                        <div>
+                            {/*<TableContainer component={Paper}>
+                                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Id</TableCell>
+                                            <TableCell align="right"># fish Companies</TableCell>
+                                            <TableCell align="right">Avg. Revenue</TableCell>
+                                            <TableCell align="right"># Nodes</TableCell>
+                                            <TableCell align="right"># Links</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {rows.map((row) => (
+                                            <TableRow
+                                                key={row.id}
+                                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                            >
+                                                <TableCell component="th" scope="row">
+                                                    {row.id}
+                                                </TableCell>
+                                                <TableCell align="right">{row.numberFishCompanies}</TableCell>
+                                                <TableCell align="right">{row.averageRevenue}</TableCell>
+                                                <TableCell align="right">{row.numberNodes}</TableCell>
+                                                <TableCell align="right">{row.numberLinks}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>*/}
+                            <TableComponent rows={rows}/>
+                        </div>
+                    </div>
+                </div>
+                <div style={{width: '70%'}}>
+                    <div style={{display: 'flex', flexDirection: 'column'}} >
+                    </div>
+                </div>
             </div>
-            {selectedNode &&
-                <Graph
-                    nodes={finalNodes}
-                    links={finalLinks}
-                />
-            }
+            <div className="table-graph-container">
+                <div style={{display: 'flex', flexDirection: 'column'}}>
+                    <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+                        <Button variant="outlined" onClick={() => setCountShowing(countShowing + 10)}>ADD MORE</Button>
+                        <List component="nav" aria-label="main mailbox folders">
+                            {nodes.slice(0, countShowing).map(item =>
+                                <ListItemButton selected={item.id === selectedNode?.id} onClick={() => handleItemClick(item)}>
+                                    <ListItemText>{item.id}</ListItemText>
+                                </ListItemButton>
+                            )}
+                        </List>
+                    </Box>
+                </div>
+                {selectedNode &&
+                    <Graph
+                        nodes={finalNodes}
+                        links={finalLinks}
+                    />
+                }
+            </div>
+
             {/*<PieChart countedCountries={countedCountries.filter(i => i.value > 50)} width={1200} height={600}/>
-            <HeatMap nodes={nodes} heatMapData={heatMapData2} width={500} height={300}/>*/}
+            <HeatMap nodes={nodes} heatMapData={heatMapData2} width={500} height={300}/>
+            <RangeSliderComponent
+                data={cars}
+                width={250}
+            />*/}
         </div>
     );
 };
