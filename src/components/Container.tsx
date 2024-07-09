@@ -22,6 +22,7 @@ import HeatMap from "./HeatMap";
 import {groupedWords} from "../utils/utils";
 import MatrixDiagramComponent from "./MatrixDiagramComponent";
 import BarChart from "./BarChart";
+import FilterComponent from "./FilterComponent";
 
 const depthList = [
     {
@@ -45,6 +46,7 @@ const depthList = [
 // @ts-ignore
 const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMap, subGraphs}) => {
 
+    const [currentNodes, setCurrentNodes] = useState<Node[]>(nodes);
     const [selectedNode, setSelectedNode] = useState<Node | null>(null);
     const [selectedRow, setSelectedRow] = useState<number | null>(null);
     const [countShowing, setCountShowing] = useState<number>(10);
@@ -52,6 +54,8 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
     const [showHeatMapServices, setShowHeatMapServices] = useState<boolean>(false);
     const [showGraph, setShowGraph] = useState<boolean>(false);
     const [showMatrix, setShowMatrix] = useState<boolean>(false);
+
+    console.log(currentNodes);
 
     const handleItemClick = (item: Node, index?: number) => {
         setSelectedNode(item);
@@ -133,6 +137,7 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
 
     const filterData: any = [];
 
+    console.log(revOmuRangeStepsSlider);
     for (let r of revOmuRangesLabelsSlider) {
         const index = revOmuRangesLabelsSlider.indexOf(r);
         for (let n of nodes) {
@@ -149,6 +154,7 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
             }
         }
     }
+    console.log(filterData);
 
     const heatMapData2: any = [];
 
@@ -194,10 +200,6 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
             heatMapData2.push([r, c, count])
         }
     }
-    let checkedMap: any = {};
-    if (selectedNode) {
-        checkedMap[selectedNode.id] = 1;
-    }
 
     const getAverage = (array: any[]) =>
         array.reduce((sum: any, currentValue: any) => sum + currentValue, 0) / array.length;
@@ -226,56 +228,7 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
             <div style={{display: 'flex', justifyContent: 'space-between'}}>
                 <div style={{width: '30%'}}>
                     <div style={{display: 'flex', flexDirection: 'column'}}>
-                        <Accordion>
-                            <AccordionSummary
-                                expandIcon={<ArrowDropDownIcon/>}
-                                aria-controls="panel2-content"
-                                id="panel2-header"
-                            >
-                                <div style={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    width: '100%'
-                                }}>
-                                    <Typography>Applied Filters</Typography>
-                                    <Button style={{marginRight: '20px'}} variant="outlined"
-                                            onClick={() => setCountShowing(countShowing + 10)}>Filter</Button>
-                                </div>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <div style={{display: 'flex', flexDirection: 'column'}}>
-                                    <div style={{display: 'flex', flexDirection: 'column'}}>
-                                        <Typography>Num. Nodes/Revenue in Mil.</Typography>
-                                        <RangeSliderComponent
-                                            data={filterData} width={300}
-                                        />
-                                    </div>
-                                    <div style={{display: 'flex', flexDirection: 'column'}}>
-                                        <Typography>Countries</Typography>
-                                        <div style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center'
-                                        }}>
-                                            <PieChart countedCountries={countedCountries.filter(i => i.value > 50)}
-                                                      width={300} height={300}/>
-                                        </div>
-                                    </div>
-                                    <div style={{display: 'flex', flexDirection: 'column'}}>
-                                        <Typography>Countries</Typography>
-                                        <div style={{
-                                            marginTop: '10px',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center'
-                                        }}>
-                                            <BarChart data = {countedCountries.filter(i => i.value > 50)} width = {400} height = {400} barColor = '#6AA9C3' />
-                                        </div>
-                                    </div>
-                                </div>
-                            </AccordionDetails>
-                        </Accordion>
+                        <FilterComponent nodes={nodes} filterData={filterData} countedCountries={countedCountries} applyFilter={setCurrentNodes} />
                         <div>
                             <TableComponent rows={rows} handleClick={(id) => {
                                 setSelectedRow(id);

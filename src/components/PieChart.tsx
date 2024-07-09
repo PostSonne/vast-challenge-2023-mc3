@@ -6,21 +6,21 @@ interface PieChartProps {
     countedCountries: CountryProps[],
     width: number,
     height: number,
+    selectedCountries: string[],
+    onSetCountry: (countries: string[]) => void;
 }
 
-const PieChart: React.FC<PieChartProps> = ({countedCountries, width, height}) => {
+const PieChart: React.FC<PieChartProps> = ({countedCountries, width, height, selectedCountries, onSetCountry}) => {
     const svgRef = useRef<HTMLDivElement | null>(null);
-
-    const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
 
     function clicked (event: { defaultPrevented: any; }, d: any) {
         if (event.defaultPrevented) {return}
         const index = selectedCountries.indexOf(d.data.name);
         if (index > -1) {
-            setSelectedCountries(selectedCountries.filter(item => item !== d.data.name));
+            onSetCountry(selectedCountries.filter(item => item !== d.data.name));
 
         } else {
-            setSelectedCountries([
+            onSetCountry([
                 ...selectedCountries,
                 d.data.name
             ]);
