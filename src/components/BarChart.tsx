@@ -18,7 +18,6 @@ const BarChart: React.FC<BarChartProps> = ({ data, width, height, barColor }) =>
     const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
 
     function clicked (event: { defaultPrevented: any; }, d: any) {
-        console.log(d);
         if (event.defaultPrevented) {return}
         const index = selectedCountries.indexOf(d.name);
         if (index > -1) {
@@ -30,7 +29,6 @@ const BarChart: React.FC<BarChartProps> = ({ data, width, height, barColor }) =>
             ]);
         }
     }
-
 
     useEffect(() => {
         if (!ref.current) return;

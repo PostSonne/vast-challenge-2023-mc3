@@ -322,10 +322,11 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
                                         <Card>
                                             <div style={{margin: '12px 0', display: 'flex', flexDirection: 'column'}}>
                                                 <List component="nav" aria-label="main mailbox folders">
+                                                    <Typography style={{fontSize: "16px"}}>Select depth:</Typography>
                                                     {subGraphs[selectedRow - 1].nodes.map(item =>
                                                         <ListItemButton style={{textAlign: 'center'}} selected={item.id === selectedNode?.id}
                                                                         onClick={() => handleItemClick(item)}>
-                                                            <ListItemText>{item.id}</ListItemText>
+                                                            <ListItemText primaryTypographyProps={{fontSize: '14px'}} >{item.id}</ListItemText>
                                                         </ListItemButton>
                                                     )}
                                                 </List>
