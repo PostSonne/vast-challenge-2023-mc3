@@ -130,7 +130,7 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
         for (let r of revOmuRangesLabels) {
             let count = 0;
             const index = revOmuRangesLabels.indexOf(r);
-            for (let n of nodes) {
+            for (let n of currentNodes) {
                 if (n.product_services && containsProductName(n.product_services, groupedWords[p]) &&
                     (n.revenue_omu >= revOmuRangeSteps[index] && n.revenue_omu < revOmuRangeSteps[index + 1])) {
                     count++;
@@ -194,7 +194,7 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
         for (let r of revOmuRangesLabels) {
             let count = 0;
             const index = revOmuRangesLabels.indexOf(r);
-            for (let n of nodes) {
+            for (let n of currentNodes) {
                 if (n.country && n.country === c &&
                     (n.revenue_omu >= revOmuRangeSteps[index] && n.revenue_omu < revOmuRangeSteps[index + 1])) {
                     count++;
