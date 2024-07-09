@@ -1,6 +1,6 @@
 import React, {useRef, useEffect, useState} from 'react';
 import * as d3 from 'd3';
-import {CountryProps, Node} from "../types/types";
+import {CountryProps} from "../types/types";
 
 interface PieChartProps {
     countedCountries: CountryProps[],
@@ -85,15 +85,6 @@ const PieChart: React.FC<PieChartProps> = ({countedCountries, width, height}) =>
                 return (selectedCountries.includes(names[d])) ? radius * 1.1 : radius;
             });
 
-        const arcTest = d3.arc<d3.PieArcDatum<{ name: string; value: number }>>()
-            .innerRadius(0)
-            .outerRadius(radius * 0.4);
-
-        const outerArcFunc = (param: number) => {
-            return d3.arc<d3.PieArcDatum<{ name: string; value: number }>>()
-                .innerRadius(radius * param)
-                .outerRadius(radius * param);
-        }
 
         let colors;
         if (colors === undefined) colors = d3.schemeSpectral[names.length];

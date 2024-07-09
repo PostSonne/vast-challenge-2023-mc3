@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, {useRef, useEffect, useState} from 'react';
 import * as d3 from 'd3';
 import {CountryProps} from "../types/types";
 
@@ -12,21 +12,36 @@ interface BarChartProps {
 const BarChart: React.FC<BarChartProps> = ({ data, width, height, barColor }) => {
     const ref = useRef<SVGSVGElement | null>(null);
 
-    const countryValues = data.map(i => i.value);
     const countryNames = data.map(i => i.name);
-    const dataSorted = countryValues.sort((a,b) => b - a);
+    const dataSorted = data.sort((a,b) => b.value - a.value);
+
+    const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
+
+    function clicked (event: { defaultPrevented: any; }, d: any) {
+        console.log(d);
+        if (event.defaultPrevented) {return}
+        const index = selectedCountries.indexOf(d.name);
+        if (index > -1) {
+            setSelectedCountries(selectedCountries.filter(item => item !== d.name));
+        } else {
+            setSelectedCountries([
+                ...selectedCountries,
+                d.name
+            ]);
+        }
+    }
+
 
     useEffect(() => {
         if (!ref.current) return;
-
         const scaleLength = d3.scaleLinear().domain([0, 2600]).range([0, width]);
-        const scaleY = d3.scaleBand<number>().domain(d3.range(dataSorted.length)).range([0, height]).paddingInner(0.09);
+        const scaleY = d3.scaleBand<number>().domain(d3.range(dataSorted.length)).range([0, height]).paddingInner(0.1);
 
         const svg = d3.select(ref.current);
 
         const gs = svg
             .selectAll('g')
-            .data(countryValues)
+            .data(data)
             .join('g')
             .attr('transform', (d, i) => `translate(${10},${scaleY(i)})`)
             .attr('font-family', 'Roboto, Arial, Helvetica, sans-serif')
@@ -36,17 +51,20 @@ const BarChart: React.FC<BarChartProps> = ({ data, width, height, barColor }) =>
             .data((d) => [d])
             .join('rect')
             .attr('height', scaleY.bandwidth())
-            .attr('width', scaleLength)
+            .attr('width', (d) => scaleLength(d.value))
             .attr('fill', barColor)
-            .attr('opacity', '0.4');
+            .attr('opacity', '1')
+            .attr('stroke', (d: any) => selectedCountries.includes(d.name) ? '#000' : '')
+            .attr('stroke-width', (d: any) => selectedCountries.includes(d.name) ? '3' : '')
+            .on("click", clicked);
 
         gs.selectAll('text')
             .data((d) => [d])
             .join('text')
             .attr('dx', 350)
             .attr('y', scaleY.bandwidth())
-            .attr('dy', -5)
-            .text((d) => d);
+            .attr('dy', -7)
+            .text((d) => d.value);
 
         const names = svg
             .selectAll('g')
@@ -56,12 +74,17 @@ const BarChart: React.FC<BarChartProps> = ({ data, width, height, barColor }) =>
         names.selectAll('textName')
             .data((d) => [d])
             .join('text')
-            .attr('dx', 5)
+            .attr('dx', width / 2)
             .attr('y', scaleY.bandwidth())
-            .attr('dy', -5)
+            .attr('dy', -7)
             .text((d) => d);
 
-    }, [data, width, height, barColor]);
+        return () => {
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+            d3.select(ref.current).selectAll('*').remove();
+        };
+
+    }, [data, width, height, barColor, selectedCountries]);
 
     return <svg ref={ref} width={width + 20} height={height}></svg>;
 };
