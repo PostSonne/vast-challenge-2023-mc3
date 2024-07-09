@@ -1,14 +1,8 @@
 import React, {useMemo, useState} from 'react';
 import {CountryProps, IContainerProps, Node, NodesTableRow} from "../types/types";
 import Graph from "./Graph";
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
-import RangeSliderComponent from "./BarRangeSlider";
-import PieChart from "./PieChart";
 import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
     Box,
     Button,
     Card,
@@ -21,7 +15,6 @@ import TableComponent from "./TableComponent";
 import HeatMap from "./HeatMap";
 import {filterOutliers, groupedWords} from "../utils/utils";
 import MatrixDiagramComponent from "./MatrixDiagramComponent";
-import BarChart from "./BarChart";
 import FilterComponent from "./FilterComponent";
 import {constructAllSubgraphs, constructSubgraph} from "../App";
 
@@ -50,7 +43,6 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
     const [currentNodes, setCurrentNodes] = useState<Node[]>(nodes);
     const [selectedNode, setSelectedNode] = useState<Node | null>(null);
     const [selectedRow, setSelectedRow] = useState<number | null>(null);
-    const [countShowing, setCountShowing] = useState<number>(10);
     const [showHeatMapCountries, setShowHeatMapCountries] = useState<boolean>(false);
     const [showHeatMapServices, setShowHeatMapServices] = useState<boolean>(false);
     const [showGraph, setShowGraph] = useState<boolean>(false);
@@ -58,8 +50,7 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
     const [depth, setDepth] = useState<number>(0);
 
     const subGraphs = useMemo(() => {
-        console.log("CONSTRUCT");
-        return constructAllSubgraphs(currentNodes, links);
+        return constructAllSubgraphs(currentNodes.filter(item => linkMap[item.id]), links);
     }, [currentNodes, links]);
 
     const handleItemClick = (item: Node, index?: number) => {
@@ -284,7 +275,6 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
 
                                                         for (let l of links) {
                                                             if (l.target === item.id) {
-                                                                console.log(l);
                                                                 countIncomingLinks++;
                                                             }
                                                         }

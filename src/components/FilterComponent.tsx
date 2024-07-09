@@ -42,8 +42,8 @@ const FilterComponent: React.FC<IFilterComponent> = ({nodes, filterData, counted
                                     upperRevenue = Number.POSITIVE_INFINITY;
                                 }
                                 applyFilter(nodes.filter(item =>
-                                    (selectedCountries.length === 0 || selectedCountries.includes(item.country))
-                                    && (selectedRange.length === 0 || (item.revenue_omu && item.revenue_omu >= lowerRevenue && item.revenue_omu <= upperRevenue))
+                                    (selectedCountries.length === 0 || !item.country || selectedCountries.includes(item.country))
+                                    && (selectedRange.length === 0 || !item.revenue_omu ||  (item.revenue_omu && item.revenue_omu >= lowerRevenue && item.revenue_omu <= upperRevenue))
                                 ));
                             }}>Filter</Button>
                 </div>

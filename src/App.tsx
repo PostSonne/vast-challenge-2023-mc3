@@ -73,15 +73,9 @@ const App: React.FC = () => {
         }
     }
 
-    const linkedNodes: Node[] = nodes.filter(item => linkMap[item.id]);
-
-    /*const result = useMemo(() => {
-        return constructAllSubgraphs(linkedNodes, links);
-    }, [linkedNodes, links]);*/
-
     return (
         <div className="App">
-            <Container nodes={nodes} links={links}/>
+            <Container nodes={nodes} links={links} linkMap={linkMap}/>
         </div>
     );
 };

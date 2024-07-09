@@ -63,7 +63,7 @@ const Graph: React.FC<GraphProps> = ({ nodes, links }) => {
         let simulation: Simulation<Node, undefined>;
         simulation = d3.forceSimulation<Node>(graphNodes)
             .force('link', d3.forceLink<Node, Link>(graphLinks).id((d: any) => d.id))
-            .force('charge', d3.forceManyBody().strength(-50))
+            .force('charge', d3.forceManyBody().strength(-20))
             .force('center', d3.forceCenter(width / 2, height / 2));
 
         const linkBeneficiary = childSvg.append('g')
