@@ -7,24 +7,23 @@ interface BarChartProps {
     width: number;
     height: number;
     barColor: string;
+    selectedCountries: string[],
+    onSetCountry: (countries: string[]) => void;
 }
 
-const BarChart: React.FC<BarChartProps> = ({ data, width, height, barColor }) => {
+const BarChart: React.FC<BarChartProps> = ({ data, width, height, barColor, selectedCountries, onSetCountry }) => {
     const ref = useRef<SVGSVGElement | null>(null);
 
     const countryNames = data.map(i => i.name);
     const dataSorted = data.sort((a,b) => b.value - a.value);
 
-    const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
-
     function clicked (event: { defaultPrevented: any; }, d: any) {
-        console.log(d);
         if (event.defaultPrevented) {return}
         const index = selectedCountries.indexOf(d.name);
         if (index > -1) {
-            setSelectedCountries(selectedCountries.filter(item => item !== d.name));
+            onSetCountry(selectedCountries.filter(item => item !== d.name));
         } else {
-            setSelectedCountries([
+            onSetCountry([
                 ...selectedCountries,
                 d.name
             ]);

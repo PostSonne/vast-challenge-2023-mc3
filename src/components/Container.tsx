@@ -23,6 +23,7 @@ import {filterOutliers, groupedWords} from "../utils/utils";
 import MatrixDiagramComponent from "./MatrixDiagramComponent";
 import BarChart from "./BarChart";
 import FilterComponent from "./FilterComponent";
+import {constructSubgraph} from "../App";
 
 const depthList = [
     {
@@ -54,8 +55,7 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
     const [showHeatMapServices, setShowHeatMapServices] = useState<boolean>(false);
     const [showGraph, setShowGraph] = useState<boolean>(false);
     const [showMatrix, setShowMatrix] = useState<boolean>(false);
-
-    console.log(currentNodes);
+    const [depth, setDepth] = useState<number>(0);
 
     const handleItemClick = (item: Node, index?: number) => {
         setSelectedNode(item);
@@ -137,7 +137,6 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
 
     const filterData: any = [];
 
-    console.log(revOmuRangeStepsSlider);
     for (let r of revOmuRangesLabelsSlider) {
         const index = revOmuRangesLabelsSlider.indexOf(r);
         for (let n of nodes) {
@@ -154,7 +153,6 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
             }
         }
     }
-    console.log(filterData);
 
     const heatMapData2: any = [];
 
@@ -262,7 +260,7 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
                                                 variant="standard"
                                             >
                                                 {depthList.map((option) => (
-                                                    <MenuItem key={option.value} value={option.value}>
+                                                    <MenuItem key={option.value} value={option.value} onClick={() => setDepth(option.value - 1)}>
                                                         {option.label}
                                                     </MenuItem>
                                                 ))}
@@ -275,11 +273,23 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
                                         <Card>
                                             <div style={{margin: '12px 0', display: 'flex', flexDirection: 'column'}}>
                                                 <List component="nav" aria-label="main mailbox folders">
-                                                    {subGraphs[selectedRow - 1].nodes.map(item =>
-                                                        <ListItemButton style={{textAlign: 'center'}} selected={item.id === selectedNode?.id}
-                                                                        onClick={() => handleItemClick(item)}>
-                                                            <ListItemText>{item.id}</ListItemText>
-                                                        </ListItemButton>
+                                                    {subGraphs[selectedRow - 1].nodes.map(item => {
+                                                        let countIncomingLinks = 0;
+
+                                                        for (let l of links) {
+                                                            if (l.target === item.id) {
+                                                                console.log(l);
+                                                                countIncomingLinks++;
+                                                            }
+                                                        }
+
+                                                        return {...item, countedIncomingLinks: countIncomingLinks}
+                                                    }).sort((a, b) => b.countedIncomingLinks - a.countedIncomingLinks).map(item => {
+                                                        return (<ListItemButton style={{textAlign: 'center'}} selected={item.id === selectedNode?.id}
+                                                                               onClick={() => handleItemClick(item)}>
+                                                            <ListItemText>{item.id} {item.countedIncomingLinks}</ListItemText>
+                                                        </ListItemButton>)
+                                                    }
                                                     )}
                                                 </List>
                                             </div>
@@ -288,9 +298,9 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
                                     {(showMatrix || showGraph) ? <Card>
                                         <div style={{margin: '12px 0', display: 'flex', flexDirection: 'column'}}>
                                             {showMatrix ?
-                                                <MatrixDiagramComponent nodes={subGraphs[selectedRow - 1].nodes} links={subGraphs[selectedRow - 1].links} /> : ''}
+                                                <MatrixDiagramComponent nodes={constructSubgraph(selectedNode?.id || "", nodes, links, depth).nodes} links={constructSubgraph(selectedNode?.id || "", nodes, links, depth).links} /> : ''}
                                             {showGraph ?
-                                                <Graph nodes={subGraphs[selectedRow - 1].nodes} links={subGraphs[selectedRow - 1].links} /> : ''}
+                                                <Graph nodes={constructSubgraph(selectedNode?.id || "", nodes, links, depth).nodes} links={constructSubgraph(selectedNode?.id || "", nodes, links, depth).links} /> : ''}
                                         </div>
                                     </Card> : ''}
                                 </div>

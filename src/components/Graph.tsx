@@ -11,6 +11,19 @@ interface GraphProps {
 const Graph: React.FC<GraphProps> = ({ nodes, links }) => {
     const svgRef = useRef<HTMLDivElement | null>(null);
 
+    const graphNodes: Node[] = [];
+    const graphLinks: Link[] = [];
+
+    for (let n of nodes) {
+        const node = {...n};
+        graphNodes.push(node);
+    }
+
+    for (let l of links) {
+        const link = {...l};
+        graphLinks.push(link);
+    }
+
     useEffect(() => {
         const svg = d3.select(svgRef.current);
         svg.selectAll('*').remove();
@@ -48,8 +61,8 @@ const Graph: React.FC<GraphProps> = ({ nodes, links }) => {
             .attr("height", height)
 
         let simulation: Simulation<Node, undefined>;
-        simulation = d3.forceSimulation<Node>(nodes)
-            .force('link', d3.forceLink<Node, Link>(links).id((d: any) => d.id))
+        simulation = d3.forceSimulation<Node>(graphNodes)
+            .force('link', d3.forceLink<Node, Link>(graphLinks).id((d: any) => d.id))
             .force('charge', d3.forceManyBody().strength(-300))
             .force('center', d3.forceCenter(width / 2, height / 2));
 
@@ -57,7 +70,7 @@ const Graph: React.FC<GraphProps> = ({ nodes, links }) => {
             .attr('stroke', '#057D9F')
             .attr('stroke-opacity', 0.9)
             .selectAll('line')
-            .data(links.filter(item => item.type === 'Beneficial Owner'))
+            .data(graphLinks.filter(item => item.type === 'Beneficial Owner'))
             .join("line")
             .attr("stroke-width", 5)
             .on("mouseover", mouseover)
@@ -68,7 +81,7 @@ const Graph: React.FC<GraphProps> = ({ nodes, links }) => {
             .attr('stroke', '#00BD39')
             .attr('stroke-opacity', 0.6)
             .selectAll('line')
-            .data(links.filter(item => item.type === 'Company Contacts'))
+            .data(graphLinks.filter(item => item.type === 'Company Contacts'))
             .join("line")
             .attr("stroke-width", 3)
             .on("mouseover", mouseover)
@@ -79,7 +92,7 @@ const Graph: React.FC<GraphProps> = ({ nodes, links }) => {
             .attr('stroke', '#fff')
             .attr('stroke-width', 1.5)
             .selectAll('circle')
-            .data(nodes.filter(item => item.type !== 'Company'))
+            .data(graphNodes.filter(item => item.type !== 'Company'))
             .join("circle")
             .attr('r', 10)
             .attr('fill', '#FF2300')
@@ -106,7 +119,7 @@ const Graph: React.FC<GraphProps> = ({ nodes, links }) => {
             .attr('stroke', '#fff')
             .attr('stroke-width', 1.5)
             .selectAll('circle')
-            .data(nodes.filter(item => item.type === 'Company'))
+            .data(graphNodes.filter(item => item.type === 'Company'))
             .join("circle")
             .attr('r', 20)
             .attr('fill', '#FF8100')

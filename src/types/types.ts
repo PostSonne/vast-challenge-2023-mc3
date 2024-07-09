@@ -11,6 +11,7 @@ export interface Node {
     fx?: number | null;
     fy?: number | null;
     depth?: number;
+    countedIncomingLinks?: number;
 }
 
 export interface NodeGraph {

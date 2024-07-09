@@ -7,7 +7,7 @@ import {GraphData, Link, Node} from "./types/types";
 const App: React.FC = () => {
     const data = (graphData as GraphData);
 
-    const links: Link[] = [];
+    let links: Link[] = [];
     const linkMap: any = {};
 
     const classifiedCompanyNodes: any = {};
@@ -42,6 +42,8 @@ const App: React.FC = () => {
             }
         }
     }
+
+    links = removeDuplicates(links);
 
     const nodes: Node[] = data.nodes.filter(item => item.id && item.id.length === 1).map(node => ({
         ...node,
@@ -84,7 +86,7 @@ const App: React.FC = () => {
     );
 };
 
-function constructSubgraph(nodeId: string, nodes: Node[], links: Link[], depth?: number) {
+export function constructSubgraph(nodeId: string, nodes: Node[], links: Link[], depth?: number) {
     let subgraphNodeIds = new Set([nodeId]);
     let subgraphLinks = [];
     let nodesToVisit = [{ id: nodeId, depth: 0 }];
@@ -95,18 +97,18 @@ function constructSubgraph(nodeId: string, nodes: Node[], links: Link[], depth?:
         let currentNode = current?.id;
         let currentDepth = current?.depth;
 
-        if (!visitedNodes.has(currentNode) && ((depth && currentDepth) ? currentDepth <= depth : true)) {
+        if (!visitedNodes.has(currentNode) && (((depth === 0 || depth) && currentDepth) ? (currentDepth <= depth) : true)) {
             visitedNodes.add(currentNode);
 
             for (let link of links) {
                 if (link.source === currentNode && !visitedNodes.has(link.target)) {
                     subgraphNodeIds.add(link.target);
                     subgraphLinks.push(link);
-                    nodesToVisit.push({ id: link.target, depth: (currentDepth || 0) + 1 });
+                    nodesToVisit.push({ id: link.target, depth: ((currentDepth || 0) + 1) });
                 } else if (link.target === currentNode && !visitedNodes.has(link.source)) {
                     subgraphNodeIds.add(link.source);
                     subgraphLinks.push(link);
-                    nodesToVisit.push({ id: link.source, depth: (currentDepth || 0) + 1 });
+                    nodesToVisit.push({ id: link.source, depth: ((currentDepth || 0) + 1) });
                 }
             }
         }
@@ -136,6 +138,26 @@ function constructAllSubgraphs(nodes: Node[], links: Link[]) {
     return allSubgraphs;
 }
 
+function removeDuplicates(arr: Link[]) {
+    // Create a set to store unique pairs as strings
+    const seen = new Set();
+
+    // Use filter to keep only unique pairs
+    return arr.filter(item => {
+        // Create a string representation of the pair
+        const pair = `${item.source}-${item.target}`;
+
+        // Check if the pair is already in the set
+        if (seen.has(pair)) {
+            // If it's a duplicate, filter it out
+            return false;
+        } else {
+            // If it's not a duplicate, add it to the set and keep it
+            seen.add(pair);
+            return true;
+        }
+    });
+}
 
 export default App;
 

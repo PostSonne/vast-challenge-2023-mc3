@@ -17,9 +17,6 @@ const FilterComponent: React.FC<IFilterComponent> = ({nodes, filterData, counted
     const [selectedRange, setSelectedRange] = useState<number[]>([]);
     const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
 
-    console.log(selectedRange);
-    console.log(selectedCountries);
-
     return (<>
         <Accordion>
             <AccordionSummary
@@ -83,7 +80,14 @@ const FilterComponent: React.FC<IFilterComponent> = ({nodes, filterData, counted
                             alignItems: 'center',
                             justifyContent: 'center'
                         }}>
-                            <BarChart data = {countedCountries.filter(i => i.value > 50)} width = {400} height = {400} barColor = '#6AA9C3' />
+                            <BarChart
+                                data = {countedCountries.filter(i => i.value > 50)}
+                                width = {400}
+                                height = {500}
+                                barColor = '#6AA9C3'
+                                onSetCountry={setSelectedCountries}
+                                selectedCountries={selectedCountries}
+                            />
                         </div>
                     </div>
                 </div>
