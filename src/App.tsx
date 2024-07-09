@@ -75,13 +75,13 @@ const App: React.FC = () => {
 
     const linkedNodes: Node[] = nodes.filter(item => linkMap[item.id]);
 
-    const result = useMemo(() => {
+    /*const result = useMemo(() => {
         return constructAllSubgraphs(linkedNodes, links);
-    }, [linkedNodes, links]);
+    }, [linkedNodes, links]);*/
 
     return (
         <div className="App">
-            <Container nodes={nodes} links={links} subGraphs={result}/>
+            <Container nodes={nodes} links={links}/>
         </div>
     );
 };
@@ -123,7 +123,7 @@ export function constructSubgraph(nodeId: string, nodes: Node[], links: Link[], 
     };
 }
 
-function constructAllSubgraphs(nodes: Node[], links: Link[]) {
+export function constructAllSubgraphs(nodes: Node[], links: Link[]) {
     let allSubgraphs = [];
     let visitedNodes = new Set();
 

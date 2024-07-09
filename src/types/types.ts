@@ -57,7 +57,7 @@ export interface IContainerProps {
     links: Link[];
     linkedNodes?: Node[];
     linkMap?: any;
-    subGraphs: SubGraph[]
+    subGraphs?: SubGraph[]
 }
 
 export interface SubGraph {

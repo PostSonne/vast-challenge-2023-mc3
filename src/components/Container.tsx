@@ -23,7 +23,7 @@ import {filterOutliers, groupedWords} from "../utils/utils";
 import MatrixDiagramComponent from "./MatrixDiagramComponent";
 import BarChart from "./BarChart";
 import FilterComponent from "./FilterComponent";
-import {constructSubgraph} from "../App";
+import {constructAllSubgraphs, constructSubgraph} from "../App";
 
 const depthList = [
     {
@@ -45,7 +45,7 @@ const depthList = [
 ];
 
 // @ts-ignore
-const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMap, subGraphs}) => {
+const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMap}) => {
 
     const [currentNodes, setCurrentNodes] = useState<Node[]>(nodes);
     const [selectedNode, setSelectedNode] = useState<Node | null>(null);
@@ -56,6 +56,11 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
     const [showGraph, setShowGraph] = useState<boolean>(false);
     const [showMatrix, setShowMatrix] = useState<boolean>(false);
     const [depth, setDepth] = useState<number>(0);
+
+    const subGraphs = useMemo(() => {
+        console.log("CONSTRUCT");
+        return constructAllSubgraphs(currentNodes, links);
+    }, [currentNodes, links]);
 
     const handleItemClick = (item: Node, index?: number) => {
         setSelectedNode(item);
