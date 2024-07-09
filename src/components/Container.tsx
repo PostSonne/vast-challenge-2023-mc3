@@ -1,5 +1,5 @@
 import React, {useMemo, useState} from 'react';
-import {CountryProps, IContainerProps, Link, Node, NodesTableRow} from "../types/types";
+import {CountryProps, IContainerProps, Node, NodesTableRow} from "../types/types";
 import Graph from "./Graph";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
@@ -21,6 +21,7 @@ import TableComponent from "./TableComponent";
 import HeatMap from "./HeatMap";
 import {groupedWords} from "../utils/utils";
 import MatrixDiagramComponent from "./MatrixDiagramComponent";
+import BarChart from "./BarChart";
 
 const depthList = [
     {
@@ -253,13 +254,23 @@ const Container: React.FC<IContainerProps> = ({nodes, links, linkedNodes, linkMa
                                     <div style={{display: 'flex', flexDirection: 'column'}}>
                                         <Typography>Countries</Typography>
                                         <div style={{
-                                            marginTop: '10px',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center'
                                         }}>
                                             <PieChart countedCountries={countedCountries.filter(i => i.value > 50)}
                                                       width={300} height={300}/>
+                                        </div>
+                                    </div>
+                                    <div style={{display: 'flex', flexDirection: 'column'}}>
+                                        <Typography>Countries</Typography>
+                                        <div style={{
+                                            marginTop: '10px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}>
+                                            <BarChart data = {countedCountries.filter(i => i.value > 50)} width = {400} height = {400} barColor = '#6AA9C3' />
                                         </div>
                                     </div>
                                 </div>
