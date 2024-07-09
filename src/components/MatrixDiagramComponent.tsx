@@ -33,7 +33,6 @@ const MatrixDiagramComponent: React.FC<GraphProps> = ({nodes, links}) => {
         };
         const width = 825 - margin.left - margin.right;
         const height = 825 - margin.top - margin.bottom;
-        const color = d3.scaleOrdinal(d3.schemeCategory10).domain(d3.range(10));
         const opacity = d3.scaleLinear()
             .domain([0, 4])
             .range([0.25, 1])
@@ -53,12 +52,10 @@ const MatrixDiagramComponent: React.FC<GraphProps> = ({nodes, links}) => {
         const resultLinks = links.map(item => ({...item}));
 
         resultLinks.forEach(function (e) {
-            // if(idToNode[e.source]){
             e.source = idToNode[e.source];
             e.target = idToNode[e.target];
             e.source.degree++;
             e.target.degree++;
-            // }
         });
         resultNodes.sort(function (a, b) {
             return b.group - a.group;
@@ -111,7 +108,6 @@ const MatrixDiagramComponent: React.FC<GraphProps> = ({nodes, links}) => {
             const cell = d3.select(this).selectAll('rect')
                 .data(rowData)
                 .enter().append('rect')
-                // .attr('class', 'cell')
                 .attr('x', function (d, i) { return x(i); })
                 .attr('width', x.bandwidth())
                 .attr('height', x.bandwidth())

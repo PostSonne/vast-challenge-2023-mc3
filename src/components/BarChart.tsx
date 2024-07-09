@@ -30,7 +30,6 @@ const BarChart: React.FC<BarChartProps> = ({ data, width, height, barColor, sele
         }
     }
 
-
     useEffect(() => {
         if (!ref.current) return;
         const scaleLength = d3.scaleLinear().domain([0, 2600]).range([0, width]);
